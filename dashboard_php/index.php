@@ -417,7 +417,7 @@ foreach ($rendimiento_meseros as $m) { ?>
                     <tr>
                         <th class="py-1 px-2 text-slate-200 text-xs font-bold border-b border-slate-700 bg-[#1e1b4b] sticky left-0 z-20">Product</th>
                         <?php foreach ($waiter_cols as $w): ?>
-                            <th class="py-1 px-2 text-slate-400 text-xs border-b border-slate-700 text-center"><?php echo htmlspecialchars($w); ?> (Qty)</th>
+                            <th class="py-1 px-2 text-slate-400 text-xs border-b border-slate-700 text-center"><?php echo htmlspecialchars($w); ?></th>
                         <?php
 endforeach; ?>
                         <th class="py-1 px-2 text-slate-200 text-xs font-bold border-b border-slate-700 text-right bg-[#1e1b4b] sticky right-0 z-20 border-l border-slate-700">Qty</th>
