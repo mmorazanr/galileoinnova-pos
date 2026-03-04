@@ -147,10 +147,44 @@ $stmt_media = $pdo->prepare("SELECT media_name, SUM(amount) as total_amount FROM
 $stmt_media->execute($params);
 $mesero_media = $stmt_media->fetchAll();
 
-// Desglose de Productos Vendidos
-$stmt_mp = $pdo->prepare("SELECT platillo, SUM(cantidad) as qty, SUM(monto_venta) as total_ventas FROM restaurantes_ventas " . $where_clause . " GROUP BY platillo ORDER BY qty DESC");
+// 7. Desglose de Productos Vendidos (Items Sold MATRIX)
+$stmt_mp = $pdo->prepare("SELECT platillo, mesero, SUM(cantidad) as qty, SUM(monto_venta) as total_ventas FROM restaurantes_ventas " . $where_clause . " GROUP BY platillo, mesero");
 $stmt_mp->execute($params);
-$mesero_productos = $stmt_mp->fetchAll();
+$raw_items = $stmt_mp->fetchAll();
+
+$waiters_set = [];
+$pivot_data = [];
+
+foreach ($raw_items as $row) {
+    if (empty($row['platillo'])) continue;
+    $p = $row['platillo'];
+    $m = empty($row['mesero']) ? 'Unknown' : $row['mesero'];
+    
+    $waiters_set[$m] = true;
+    
+    if (!isset($pivot_data[$p])) {
+        $pivot_data[$p] = [
+            'platillo' => $p,
+            'waiters'  => [],
+            'tot_qty'  => 0,
+            'tot_val'  => 0.0
+        ];
+    }
+    
+    $qty = (int)$row['qty'];
+    $val = (float)$row['total_ventas'];
+    
+    $pivot_data[$p]['waiters'][$m] = $qty;
+    $pivot_data[$p]['tot_qty'] += $qty;
+    $pivot_data[$p]['tot_val'] += $val;
+}
+
+$waiter_cols = array_keys($waiters_set);
+sort($waiter_cols);
+
+usort($pivot_data, function($a, $b) {
+    return $b['tot_val'] <=> $a['tot_val'];
+});
 ?>
 <!DOCTYPE html>
 <html lang="es">
