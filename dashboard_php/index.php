@@ -247,64 +247,60 @@ $mesero_productos = $stmt_mp->fetchAll();
     }
     </script>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div class="glass-card p-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-8">
+        <div class="glass-card p-6 h-full">
             <h3 class="text-slate-400 text-sm font-medium mb-1">Net Sales (Filtered)</h3>
             <p class="text-3xl font-bold text-white">$<?php echo $total_ventas; ?></p>
         </div>
-        <div class="glass-card p-6">
+        <div class="glass-card p-6 h-full">
             <h3 class="text-slate-400 text-sm font-medium mb-1">Total Tickets</h3>
             <p class="text-3xl font-bold text-white"><?php echo $total_tickets; ?></p>
         </div>
-        <div class="glass-card p-6">
+        <div class="glass-card p-6 h-full">
             <h3 class="text-slate-400 text-sm font-medium mb-1">Active Branches</h3>
             <p class="text-3xl font-bold text-white"><?php echo count($ventas_sucursal); ?></p>
         </div>
-        <div class="glass-card p-6">
+        <div class="glass-card p-6 h-full">
             <h3 class="text-slate-400 text-sm font-medium mb-1">Data Health</h3>
             <p class="text-3xl font-bold text-green-400">100% Synced</p>
         </div>
-    </div>
-
-    <!-- Primera Fila: Branch & Top Products & Leaderboard -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-        <div class="space-y-8">
-            <div class="glass-panel p-6">
-                <h2 class="text-xl font-semibold mb-4 text-white">Sales by <span class="text-blue-400">Branch</span></h2>
-                <div class="space-y-4">
-                    <?php foreach ($ventas_sucursal as $s) { ?>
-                        <div>
-                            <div class="flex justify-between text-sm mb-1">
-                                <span class="font-medium text-slate-200"><?php echo htmlspecialchars($s['restaurante']); ?></span>
-                                <span class="text-white font-semibold">$<?php echo number_format($s['total'], 2); ?></span>
-                            </div>
-                        </div>
-                    <?php
+        <div class="glass-card p-6 h-full overflow-y-auto max-h-[120px]">
+            <h3 class="text-slate-400 text-sm font-medium mb-2">Sales by Branch</h3>
+            <div class="space-y-2">
+                <?php foreach ($ventas_sucursal as $s) { ?>
+                    <div class="flex justify-between text-sm">
+                        <span class="font-medium text-slate-200"><?php echo htmlspecialchars($s['restaurante']); ?></span>
+                        <span class="text-white font-semibold">$<?php echo number_format($s['total'], 2); ?></span>
+                    </div>
+                <?php
 }?>
-                </div>
-            </div>
-
-            <div class="glass-panel p-6">
-                <h2 class="text-xl font-semibold mb-4 text-white">Top <span class="text-purple-400">Products</span></h2>
-                <div class="overflow-y-auto max-h-[400px] pr-2">
-                    <table class="w-full text-left border-collapse">
-                        <thead class="sticky top-0 bg-[#1e1b4b] z-10 shadow"><tr><th class="px-2 py-1 text-slate-400 text-xs border-b border-slate-700">Name</th><th class="px-2 py-1 text-slate-400 text-xs border-b border-slate-700 text-right">Qty</th><th class="px-2 py-1 text-slate-400 text-xs border-b border-slate-700 text-right">Sales</th></tr></thead>
-                    <tbody>
-                        <?php foreach ($top_platos as $p) { ?>
-                            <tr>
-                                <td class="px-2 py-1 text-sm text-slate-300 border-b border-slate-800"><?php echo htmlspecialchars($p['platillo']); ?></td>
-                                <td class="px-2 py-1 text-sm text-right text-slate-100 border-b border-slate-800"><?php echo number_format($p['total_cantidad']); ?></td>
-                                <td class="px-2 py-1 text-sm text-right text-green-400 border-b border-slate-800">$<?php echo number_format($p['total_ventas'], 2); ?></td>
-                            </tr>
-                        <?php
-}?>
-                        </tbody>
-                    </table>
-                </div>
             </div>
         </div>
-            <div class="glass-panel p-6 h-full flex flex-col">
-                <h2 class="text-xl font-semibold mb-4 text-white">Server & Waiter <span class="text-green-400">Leaderboard</span></h2>
+    </div>
+
+    <!-- Segunda Fila: Top Products & Leaderboard -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <div class="glass-panel p-6 h-full flex flex-col">
+            <h2 class="text-xl font-semibold mb-4 text-white">Top <span class="text-purple-400">Products</span></h2>
+            <div class="overflow-y-auto flex-1 max-h-[500px] pr-2">
+                <table class="w-full text-left border-collapse">
+                    <thead class="sticky top-0 bg-[#1e1b4b] z-10 shadow"><tr><th class="px-2 py-1 text-slate-400 text-xs border-b border-slate-700">Name</th><th class="px-2 py-1 text-slate-400 text-xs border-b border-slate-700 text-right">Qty</th><th class="px-2 py-1 text-slate-400 text-xs border-b border-slate-700 text-right">Sales</th></tr></thead>
+                <tbody>
+                    <?php foreach ($top_platos as $p) { ?>
+                        <tr>
+                            <td class="px-2 py-1 text-sm text-slate-300 border-b border-slate-800"><?php echo htmlspecialchars($p['platillo']); ?></td>
+                            <td class="px-2 py-1 text-sm text-right text-slate-100 border-b border-slate-800"><?php echo number_format($p['total_cantidad']); ?></td>
+                            <td class="px-2 py-1 text-sm text-right text-green-400 border-b border-slate-800">$<?php echo number_format($p['total_ventas'], 2); ?></td>
+                        </tr>
+                    <?php
+}?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="glass-panel p-6 h-full flex flex-col">
+            <h2 class="text-xl font-semibold mb-4 text-white">Server & Waiter <span class="text-green-400">Leaderboard</span></h2>
                 <div class="overflow-y-auto max-h-[500px]">
                     <table class="w-full text-left border-collapse">
                         <thead class="sticky top-0 bg-[#1e1b4b] z-10 shadow">
