@@ -1,0 +1,9 @@
+{
+    "restaurant_name": "The Lazy Donkey Restaurant",
+    "local_db_path": "C:\\ICOM\\Database\\CBOData_s.mdb",
+    "sync_interval_seconds": 300,
+    "remote_db_host": "hawk200.startdedicated.com",
+    "remote_db_user": "recetas",
+    "remote_db_pass": "gcode2025!",
+    "remote_db_name": "Recetas"
+}

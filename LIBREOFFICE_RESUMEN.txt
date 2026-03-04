@@ -1,0 +1,77 @@
+═══════════════════════════════════════════════════════════════
+                    LIBREOFFICE - RESUMEN RÁPIDO
+═══════════════════════════════════════════════════════════════
+
+1️⃣ DESCARGAR LibreOffice (Gratis)
+   ↓
+   https://www.libreoffice.org/download/download-libreoffice/
+
+   Descarga: LibreOffice_*.exe (versión Windows)
+
+2️⃣ INSTALAR
+   ↓
+   - Click derecho → "Run as Administrator"
+   - Sigue los pasos
+   - Reinicia si lo pide
+
+3️⃣ ABRIR BASE DE DATOS
+   ↓
+   Opción A (más fácil):
+   - Abre File Explorer
+   - Ve a: C:\ICOM\Database\
+   - Click derecho en: CBODaily.mdb
+   - "Open with..." → "LibreOffice Base"
+
+   Opción B:
+   - Abre LibreOffice Base
+   - File → Open
+   - Selecciona: C:\ICOM\Database\CBODaily.mdb
+
+4️⃣ BUSCAR EL REPORTE
+   ↓
+   - En el panel IZQUIERDO, busca: "Reports"
+   - Expande la carpeta
+   - Busca: "TransactionJournal"
+   - Click derecho en él
+
+5️⃣ EXPORTAR A EXCEL
+   ↓
+   - Click derecho en TransactionJournal
+   - "Export" → "Microsoft Excel (.xlsx)"
+   - Ubicación: C:\ICOM\Database\Exports\
+   - Nombre: TransactionJournal.xlsx
+   - Click: "Export" o "Save"
+
+6️⃣ ¡LISTO!
+   ↓
+   Tu archivo está en:
+   C:\ICOM\Database\Exports\TransactionJournal.xlsx
+
+═══════════════════════════════════════════════════════════════
+
+⏱️ TIEMPO ESTIMADO: 15-20 minutos total
+
+✓ Descarga: 3-5 minutos
+✓ Instalación: 5-10 minutos
+✓ Exportación: 2-5 minutos
+
+═══════════════════════════════════════════════════════════════
+
+❓ PROBLEMAS COMUNES:
+
+P: "No veo Reports en LibreOffice"
+R: View → Reports (en el menú)
+  O los reportes pueden estar nombrados diferente
+
+P: "No puedo exportar el archivo"
+R: Verifica que exista la carpeta:
+  C:\ICOM\Database\Exports\
+  Si no existe, créala
+
+P: "El reporte se ve roto o vacío"
+R: LibreOffice puede tener limitaciones con reportes complejos
+   Prueba: CloudConvert online (ver en otros archivos)
+
+═══════════════════════════════════════════════════════════════
+
+¿Necesitas ayuda? Avísame en qué paso te quedaste.

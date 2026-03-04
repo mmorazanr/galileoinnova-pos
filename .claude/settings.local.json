@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python:*)",
+      "Bash(tail:*)",
+      "Bash(grep:*)",
+      "Bash(cat:*)"
+    ]
+  }
+}

@@ -1,0 +1,778 @@
+8/9/2013 9:48:57 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+9/18/2013 5:00:58 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+9/30/2013 10:07:35 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+10/3/2013 10:05:12 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+10/6/2013 9:09:00 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+10/19/2013 4:45:02 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+10/30/2013 10:24:35 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+11/7/2013 10:35:04 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+12/4/2013 5:06:39 PM
+Error 5:  Invalid procedure call or argument
+Procedure:  frmCheckViewer  PrintCheck
+
+12/5/2013 10:19:24 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+12/26/2013 10:13:34 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+1/9/2014 10:17:30 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+1/14/2014 10:30:23 PM
+Error 5:  Invalid procedure call or argument
+Procedure:  frmCheckViewer  PrintCheck
+
+5/6/2014 12:14:21 AM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+3/5/2015 8:04:39 PM
+Error 5:  Invalid procedure call or argument
+Procedure:  frmCheckViewer  PrintCheck
+
+3/8/2015 7:31:08 PM
+Error 5:  Invalid procedure call or argument
+Procedure:  frmCheckViewer  PrintCheck
+
+3/19/2015 9:06:33 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+4/3/2015 1:11:13 PM
+Error 70:  Permission denied
+Procedure:  frmMainReports  WritePOSStatus
+
+4/9/2015 5:04:04 PM
+Error 70:  Permission denied
+Procedure:  frmMainReports  WritePOSStatus
+
+7/5/2015 4:30:42 PM
+Error 5:  Invalid procedure call or argument
+Procedure:  frmCheckViewer  PrintCheck
+
+7/11/2015 12:21:34 AM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+8/23/2015 5:43:58 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+8/27/2015 5:16:28 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+10/6/2015 4:08:54 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmDefaultOptions  ExecuteParameterQuery - AppendCashierMisc0Ter
+
+10/6/2015 4:08:57 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmDefaultOptions  ExecuteParameterQuery - AppendCashierMediaForeignTer
+
+10/6/2015 4:09:14 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmDefaultOptions  ExecuteParameterQuery - AppendCashierMisc0Ter
+
+10/6/2015 4:09:16 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmDefaultOptions  ExecuteParameterQuery - AppendCashierMediaForeignTer
+
+10/6/2015 4:09:38 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  ExecuteParameterQuery - AppendCashierMisc0Ter
+
+10/6/2015 4:09:40 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  ExecuteParameterQuery - AppendCashierMediaForeignTer
+
+10/6/2015 4:37:32 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmDefaultOptions  ExecuteParameterQuery - AppendCashierMisc0Ter
+
+10/6/2015 4:37:34 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmDefaultOptions  ExecuteParameterQuery - AppendCashierMediaForeignTer
+
+1/31/2016 9:43:12 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+2/15/2016 9:56:38 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+3/4/2016 1:02:04 PM
+Error 70:  Permission denied
+Procedure:  frmMainReports  WritePOSStatus
+
+3/18/2016 11:49:33 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+4/7/2016 12:41:32 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  ExecuteParameterQuery - AppendCashierMisc0Ter
+
+4/7/2016 12:41:32 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  ExecuteParameterQuery - AppendCashierMediaForeignTer
+
+4/7/2016 12:41:45 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  ExecuteParameterQuery - AppendCashierMisc0Ter
+
+4/7/2016 12:41:45 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  ExecuteParameterQuery - AppendCashierMediaForeignTer
+
+4/7/2016 12:42:06 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  OpenGridRecordset
+
+4/7/2016 12:42:07 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  OpenRecordset
+
+4/7/2016 12:42:09 PM
+Error 3704:  Operation is not allowed when the object is closed.
+Procedure:  frmDefaultOptions  Class_Terminate
+
+4/7/2016 12:43:40 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  ExecuteParameterQuery - AppendCashierMisc0Ter
+
+4/7/2016 12:43:41 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  ExecuteParameterQuery - AppendCashierMediaForeignTer
+
+7/7/2016 9:06:23 PM
+Error 70:  Permission denied
+Procedure:  frmMainReports  WritePOSStatus
+
+11/19/2016 4:16:54 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmDefaultOptions  ExecuteParameterQuery - AppendCashierMisc0Ter
+
+11/19/2016 4:17:00 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmDefaultOptions  ExecuteParameterQuery - AppendCashierMediaForeignTer
+
+11/19/2016 4:17:15 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmDefaultOptions  ExecuteParameterQuery - AppendCashierMisc0Ter
+
+11/19/2016 4:17:39 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmDefaultOptions  ExecuteParameterQuery - AppendCashierMediaForeignTer
+
+11/19/2016 4:17:50 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmDefaultOptions  ExecuteParameterQuery - AppendCashierMisc0Ter
+
+11/19/2016 4:17:52 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmDefaultOptions  ExecuteParameterQuery - AppendCashierMediaForeignTer
+
+11/19/2016 4:18:15 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmDefaultOptions  ExecuteParameterQuery - AppendCashierMisc0Ter
+
+11/19/2016 4:18:16 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmDefaultOptions  ExecuteParameterQuery - AppendCashierMediaForeignTer
+
+11/19/2016 7:38:52 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+12/24/2016 3:18:05 PM
+Error 5:  Invalid procedure call or argument
+Procedure:  frmCheckViewer  PrintCheck
+
+4/13/2017 10:08:12 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+7/23/2017 4:22:49 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+8/10/2017 9:44:45 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+10/7/2017 4:30:06 PM
+Error 339:  Component 'Actbar3.ocx' or one of its dependencies not correctly registered: a file is missing or invalid
+Procedure:  frmMainReports  ShowDefaultOptions
+
+10/22/2017 9:24:00 PM
+Error 5:  Invalid procedure call or argument
+Procedure:  frmCheckViewer  PrintCheck
+
+12/18/2017 4:08:17 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+2/2/2018 10:43:45 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+2/8/2018 4:26:59 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+2/11/2018 9:06:56 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+3/7/2018 10:11:51 PM
+Error 5:  Invalid procedure call or argument
+Procedure:  frmCheckViewer  PrintCheck
+
+4/24/2018 4:19:49 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+6/2/2018 6:39:51 PM
+Error -2147467259:  Could not use ''; file already in use.
+Procedure:  frmMainReports  GetLastID
+
+6/6/2018 9:11:35 PM
+Error 5:  Invalid procedure call or argument
+Procedure:  frmCheckViewer  PrintCheck
+
+6/18/2018 4:19:48 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+7/10/2018 1:44:27 PM
+Error 9:  Subscript out of range
+Procedure:  frmMainReports  POSFinancial_rpt
+
+7/17/2018 3:58:44 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+7/27/2018 11:14:51 PM
+Error 5:  Invalid procedure call or argument
+Procedure:  frmCheckViewer  PrintCheck
+
+9/8/2018 9:02:08 PM
+Error 5:  Invalid procedure call or argument
+Procedure:  frmCheckViewer  PrintCheck
+
+11/4/2018 10:22:48 PM
+Error 5:  Invalid procedure call or argument
+Procedure:  frmCheckViewer  PrintCheck
+
+2/3/2019 4:05:08 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+2/14/2019 10:15:15 PM
+Error 5:  Invalid procedure call or argument
+Procedure:  frmCheckViewer  PrintCheck
+
+2/23/2019 3:53:05 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+4/13/2019 7:46:36 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  ExecuteParameterQuery - AppendCashierMisc0Ter
+
+4/13/2019 7:46:36 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  ExecuteParameterQuery - AppendCashierMediaForeignTer
+
+4/13/2019 7:46:45 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  ExecuteParameterQuery - AppendCashierMisc0Ter
+
+4/13/2019 7:46:46 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  ExecuteParameterQuery - AppendCashierMediaForeignTer
+
+4/13/2019 7:47:03 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  ExecuteParameterQuery - AppendCashierMisc0Ter
+
+4/13/2019 7:47:04 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  ExecuteParameterQuery - AppendCashierMediaForeignTer
+
+4/13/2019 7:47:07 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  OpenGridRecordset
+
+4/13/2019 7:47:08 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  OpenRecordset
+
+4/13/2019 7:47:10 PM
+Error 3704:  Operation is not allowed when the object is closed.
+Procedure:  frmDefaultOptions  Class_Terminate
+
+4/13/2019 7:47:20 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  ExecuteParameterQuery - AppendCashierMisc0Ter
+
+4/13/2019 7:47:20 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  ExecuteParameterQuery - AppendCashierMediaForeignTer
+
+4/18/2019 10:11:24 PM
+Error 5:  Invalid procedure call or argument
+Procedure:  frmCheckViewer  PrintCheck
+
+4/20/2019 4:35:33 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+4/21/2019 4:06:41 PM
+Error 5:  Invalid procedure call or argument
+Procedure:  frmCheckViewer  PrintCheck
+
+5/9/2019 3:51:17 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+5/10/2019 7:29:05 PM
+Error 9:  Subscript out of range
+Procedure:  frmMainReports  POSFinancial_rpt
+
+6/27/2019 10:12:09 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+8/28/2019 9:57:32 PM
+Error 5:  Invalid procedure call or argument
+Procedure:  frmCheckViewer  PrintCheck
+
+12/31/2019 9:03:25 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+2/8/2020 4:13:41 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+5/31/2020 11:49:22 AM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+5/31/2020 11:49:27 AM
+Error 5:  Invalid procedure call or argument
+Procedure:  frmCheckViewer  PrintCheck
+
+7/12/2020 3:48:30 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+7/24/2020 10:00:11 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+7/31/2020 11:37:31 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+8/30/2020 4:18:05 PM
+Error 5:  Invalid procedure call or argument
+Procedure:  frmCheckViewer  PrintCheck
+
+10/5/2020 9:54:09 PM
+Error 5:  Invalid procedure call or argument
+Procedure:  frmCheckViewer  PrintCheck
+
+10/5/2020 9:55:38 PM
+Error 91:  Object variable or With block variable not set
+12/12/2020 9:42:58 PM
+Error 5:  Invalid procedure call or argument
+Procedure:  frmCheckViewer  PrintCheck
+
+1/15/2021 4:30:08 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+1/27/2021 4:21:43 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+3/20/2021 9:28:51 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+4/14/2021 4:22:39 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+6/10/2021 4:02:03 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+6/19/2021 4:24:36 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+7/14/2021 3:58:21 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+7/24/2021 10:32:15 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+8/5/2021 4:08:19 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+9/4/2021 6:34:05 PM
+Error 9:  Subscript out of range
+Procedure:  frmMainReports  POSCashier_rpt
+
+10/23/2021 4:23:02 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+12/11/2021 11:22:51 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+3/21/2022 10:08:29 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+3/28/2022 10:25:24 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+7/19/2022 10:25:32 PM
+Error 9:  Subscript out of range
+Procedure:  frmMainReports  WritePOSStatus
+
+8/4/2022 4:24:27 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+8/10/2022 10:03:24 PM
+Error 5:  Invalid procedure call or argument
+Procedure:  frmCheckViewer  PrintCheck
+
+8/24/2022 4:23:34 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+8/24/2022 9:00:26 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+9/12/2022 3:43:07 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+10/3/2022 8:36:17 PM
+Error 70:  Permission denied
+Procedure:  frmMainReports  DeleteFile
+
+10/12/2022 4:16:27 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+11/9/2022 5:05:46 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+11/17/2022 3:27:27 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+11/23/2022 10:27:27 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+11/26/2022 3:13:58 PM
+Error 5:  Invalid procedure call or argument
+Procedure:  frmCheckViewer  PrintCheck
+
+12/22/2022 10:06:39 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+1/16/2023 9:57:42 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+1/17/2023 9:53:49 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSFinancial_rpt
+
+3/15/2023 4:42:09 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+3/16/2023 8:53:03 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+6/26/2023 10:08:31 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  OpenGridRecordset
+
+6/26/2023 10:08:32 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  OpenRecordset
+
+6/26/2023 10:08:37 PM
+Error 3704:  Operation is not allowed when the object is closed.
+Procedure:  frmDefaultOptions  Class_Terminate
+
+6/26/2023 10:08:39 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  OpenGridRecordset
+
+6/26/2023 10:08:40 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  OpenRecordset
+
+6/26/2023 10:08:42 PM
+Error 3704:  Operation is not allowed when the object is closed.
+Procedure:  frmDefaultOptions  Class_Terminate
+
+6/26/2023 10:08:45 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  OpenGridRecordset
+
+6/26/2023 10:08:59 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  OpenRecordset
+
+6/26/2023 10:09:01 PM
+Error 3704:  Operation is not allowed when the object is closed.
+Procedure:  frmDefaultOptions  Class_Terminate
+
+6/26/2023 10:09:08 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  OpenGridRecordset
+
+6/26/2023 10:09:09 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  OpenRecordset
+
+6/26/2023 10:09:11 PM
+Error 3704:  Operation is not allowed when the object is closed.
+Procedure:  frmDefaultOptions  Class_Terminate
+
+6/29/2023 10:22:49 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+7/5/2023 9:58:11 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  OpenGridRecordset
+
+7/5/2023 9:58:12 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  OpenRecordset
+
+7/5/2023 9:58:15 PM
+Error 3704:  Operation is not allowed when the object is closed.
+Procedure:  frmDefaultOptions  Class_Terminate
+
+7/5/2023 9:58:19 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  OpenGridRecordset
+
+7/5/2023 9:58:21 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  OpenRecordset
+
+7/5/2023 9:58:23 PM
+Error 3704:  Operation is not allowed when the object is closed.
+Procedure:  frmMainReports  Class_Terminate
+
+7/5/2023 9:58:26 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  ExecuteParameterQuery - AppendCashierMisc0Ter
+
+7/5/2023 9:58:27 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  ExecuteParameterQuery - AppendCashierMediaForeignTer
+
+7/5/2023 9:58:36 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  OpenGridRecordset
+
+7/5/2023 9:58:36 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  OpenRecordset
+
+7/5/2023 9:58:39 PM
+Error 3704:  Operation is not allowed when the object is closed.
+Procedure:  frmDefaultOptions  Class_Terminate
+
+7/5/2023 9:58:53 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  ExecuteParameterQuery - AppendCashierMisc0Ter
+
+7/5/2023 9:58:54 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  ExecuteParameterQuery - AppendCashierMediaForeignTer
+
+7/23/2023 9:19:16 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+11/5/2023 3:27:01 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+11/9/2023 10:45:02 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+12/14/2023 9:48:00 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+2/11/2024 9:08:17 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+3/2/2024 10:39:02 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+3/25/2024 10:02:01 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+4/16/2024 9:49:18 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+4/27/2024 10:20:44 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+5/9/2024 6:26:38 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+5/26/2024 8:43:34 PM
+Error 5:  Invalid procedure call or argument
+Procedure:  frmCheckViewer  PrintCheck
+
+6/19/2024 9:56:10 PM
+Error 5:  Invalid procedure call or argument
+Procedure:  frmCheckViewer  PrintCheck
+
+7/18/2024 5:16:10 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+9/29/2024 5:35:01 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+
+11/15/2024 9:40:58 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+1/31/2025 9:30:01 PM
+Error 5:  Invalid procedure call or argument
+Procedure:  frmCheckViewer  PrintCheck
+
+8/8/2025 8:42:45 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  ExecuteParameterQuery - AppendCashierMisc0Ter
+
+8/8/2025 8:42:46 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  ExecuteParameterQuery - AppendCashierMediaForeignTer
+
+8/8/2025 8:42:53 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  ExecuteParameterQuery - AppendCashierMisc0Ter
+
+8/8/2025 8:42:54 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  ExecuteParameterQuery - AppendCashierMediaForeignTer
+
+8/8/2025 10:22:43 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  OpenGridRecordset
+
+8/8/2025 10:22:44 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  OpenRecordset
+
+8/8/2025 10:22:46 PM
+Error 3704:  Operation is not allowed when the object is closed.
+Procedure:  frmDefaultOptions  Class_Terminate
+
+8/8/2025 10:23:25 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  OpenGridRecordset
+
+8/8/2025 10:23:26 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  OpenRecordset
+
+8/8/2025 10:23:33 PM
+Error 3704:  Operation is not allowed when the object is closed.
+Procedure:  frmDefaultOptions  Class_Terminate
+
+8/8/2025 10:23:36 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  OpenGridRecordset
+
+8/8/2025 10:23:38 PM
+Error -2147467259:  Error #-2147467259Unrecognized database format 'g:\DataBase\CBODaily.mdb'.(Source: Microsoft JET Database Engine)(SQL State: 3343)(NativeError: -536544438)No Help file available
+Procedure:  frmMainReports  OpenRecordset
+
+8/8/2025 10:23:40 PM
+Error 3704:  Operation is not allowed when the object is closed.
+Procedure:  frmDefaultOptions  Class_Terminate
+
+11/30/2025 5:36:40 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+1/29/2026 6:13:21 PM
+Error 13:  Type mismatch
+Procedure:  frmDefaultOptions  GetReportOptions
+
+2/15/2026 8:34:54 PM
+Error 9:  Subscript out of range
+Procedure:  frmDefaultOptions  POSCashier_rpt
+

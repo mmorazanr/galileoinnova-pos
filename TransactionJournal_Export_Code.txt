@@ -1,0 +1,91 @@
+VBA CODE FOR EXPORTING TRANSACTIONJOURNAL.RPT TO EXCEL
+=====================================================
+
+Copiar este código en Access:
+1. Abre CBODaily.mdb en Access
+2. Presiona ALT + F11 para abrir el Editor de VBA
+3. Insert → Module
+4. Copia TODO el código de abajo:
+
+---
+
+Sub ExportTransactionJournalToExcel()
+    On Error GoTo ErrorHandler
+
+    Dim reportName As String
+    Dim exportPath As String
+    Dim fileName As String
+    Dim dateTimeStamp As String
+
+    ' Configurar parámetros
+    reportName = "TransactionJournal"
+    exportPath = "C:\ICOM\Database\Exports\"
+    dateTimeStamp = Format(Now(), "yyyy-mm-dd_hh-mm-ss")
+    fileName = exportPath & "TransactionJournal_" & dateTimeStamp & ".xlsx"
+
+    ' Verificar que la carpeta existe
+    If Dir(exportPath, vbDirectory) = "" Then
+        MkDir exportPath
+        MsgBox "Carpeta de Exports creada: " & exportPath
+    End If
+
+    ' Abrir el reporte en modo diseño (oculto)
+    DoCmd.OpenReport reportName, acViewPreview
+
+    ' Exportar el reporte a Excel
+    DoCmd.OutputTo acOutputReport, reportName, acFormatXLSX, fileName
+
+    ' Cerrar el reporte
+    DoCmd.Close acReport, reportName
+
+    ' Mensaje de éxito
+    MsgBox "Reporte exportado exitosamente a:" & vbCrLf & fileName, vbInformation, "Exportación Completada"
+
+    Exit Sub
+
+ErrorHandler:
+    MsgBox "Error al exportar el reporte: " & Err.Description, vbCritical, "Error"
+End Sub
+
+---
+
+CÓMO USAR:
+==========
+1. Ejecuta la macro desde: Tools → Macro → Macros → Selecciona ExportTransactionJournalToExcel → Run
+
+O MEJOR AÚN - CREAR UN BOTÓN:
+=============================
+1. Ve a una Form (formulario) existente o crea uno nuevo
+2. Modo Diseño (Design View)
+3. Insert → Button (or Comando Button)
+4. En las propiedades, cambia:
+   - Caption: "Exportar Transaction Journal"
+   - On Click: [Event Procedure]
+5. Click en el botón (...) al lado de On Click
+6. Copia este código en el evento Click:
+
+    Sub Button_Click()
+        Call ExportTransactionJournalToExcel
+    End Sub
+
+7. Guarda el formulario y prueba el botón
+
+---
+
+VARIANTES DEL CÓDIGO:
+====================
+
+Si quieres un nombre SIMPLE sin fecha:
+    fileName = exportPath & "TransactionJournal.xlsx"
+
+Si quieres que abra automáticamente el archivo después:
+    DoCmd.OutputTo acOutputReport, reportName, acFormatXLSX, fileName
+    ' Agregar esta línea:
+    Shell "C:\Program Files\Microsoft Office\Office16\EXCEL.EXE """ & fileName & """", vbNormalFocus
+
+Si quieres elegir la ubicación con un diálogo:
+    ' Reemplaza las líneas de configuración con:
+    Dim folderPath As String
+    folderPath = BrowseForFolder
+    If folderPath = "" Then Exit Sub
+    fileName = folderPath & "TransactionJournal_" & dateTimeStamp & ".xlsx"

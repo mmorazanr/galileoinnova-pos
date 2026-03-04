@@ -1,0 +1,74 @@
+═══════════════════════════════════════════════════════════════
+       EXPORTAR TransactionJournal.rpt A EXCEL - RESUMEN RÁPIDO
+═══════════════════════════════════════════════════════════════
+
+1. DESCARGAR Access Runtime (Gratis)
+   ↓
+   https://www.microsoft.com/en-us/download/details.aspx?id=105047
+
+   Descarga: AccessRuntime_X64_en-us.exe
+   (O versión 2019 si prefieres)
+
+2. INSTALAR
+   ↓
+   - Ejecuta como Administrador
+   - Sigue los pasos
+   - Reinicia si lo pide
+
+3. EXPORTAR (elige 1 método)
+
+   OPCIÓN A - PowerShell (recomendado):
+   ────────────────────────────────────
+   Abre PowerShell y ejecuta:
+
+   cd C:\ICOM\Database
+   powershell -ExecutionPolicy Bypass -File ExportTransactionJournal.ps1
+
+   ✓ Resultado: Excel en C:\ICOM\Database\Exports\
+
+
+   OPCIÓN B - VBScript:
+   ────────────────────
+   Abre cmd.exe y ejecuta:
+
+   cd C:\ICOM\Database
+   cscript ExportTransactionJournal.vbs
+
+   ✓ Resultado: Excel en C:\ICOM\Database\Exports\
+
+
+   OPCIÓN C - Manual (sin scripts):
+   ────────────────────────────────
+   1. Abre: C:\ICOM\Database\CBODaily.mdb
+   2. Busca: TransactionJournal (Reports)
+   3. Click derecho → Export
+   4. Formato: Excel (*.xlsx)
+   5. Guardar en: C:\ICOM\Database\Exports\
+
+═══════════════════════════════════════════════════════════════
+
+ARCHIVOS CREADOS PARA TI:
+
+✓ ExportTransactionJournal.vbs
+  → Script VBScript para automatizar la exportación
+
+✓ ExportTransactionJournal.ps1
+  → Script PowerShell más moderno con mejor visualización
+
+✓ OPCIONES_EXPORTAR_SIN_ACCESS.md
+  → Documento con todas las alternativas
+
+✓ GUIA_ACCESS_RUNTIME.md
+  → Guía completa paso a paso
+
+✓ RESUMEN_RAPIDO.txt
+  → Este archivo
+
+═══════════════════════════════════════════════════════════════
+
+¿PREGUNTAS?
+
+Una vez descargues e instales Access Runtime,
+avísame y podemos verificar que los scripts funcionen.
+
+═══════════════════════════════════════════════════════════════
