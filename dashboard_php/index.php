@@ -364,32 +364,65 @@ foreach ($rendimiento_meseros as $m) { ?>
         </div>
     </div>
     
-            <!-- Desglose de Productos (Items) -->
-            <div class="glass-panel p-6">
+    <!-- Matriz de Productos (Items Sold MATRIX) -->
+    <div class="glass-panel p-6 mb-8">
+        <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
+            <div>
                 <h2 class="text-xl font-semibold mb-2 text-white">Items Sold: <span class="text-purple-400"><?php echo !empty($mesero_filter) ? htmlspecialchars($mesero_filter) : 'Restaurant Total'; ?></span></h2>
-                <p class="text-sm text-slate-400 mb-6">Detailed list of products included in the tickets.</p>
-                <div class="overflow-y-auto max-h-[400px]">
-                    <table class="w-full text-left border-collapse text-sm">
-                        <thead class="sticky top-0 bg-[#1e1b4b] z-10 shadow">
-                            <tr>
-                                <th class="py-1 px-2 text-slate-400 text-xs border-b border-slate-700">Product</th>
-                                <th class="py-1 px-2 text-slate-400 text-xs border-b border-slate-700 text-right">Qty</th>
-                                <th class="py-1 px-2 text-slate-400 text-xs border-b border-slate-700 text-right">Net Sales</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($mesero_productos as $mp) { ?>
-                                <tr class="hover:bg-white/5 transition-colors">
-                                    <td class="py-1 px-2 text-xs text-slate-200 border-b border-slate-800 border-opacity-50"><?php echo htmlspecialchars($mp['platillo']); ?></td>
-                                    <td class="py-1 px-2 text-xs text-slate-300 font-medium text-right border-b border-slate-800 border-opacity-50"><?php echo number_format($mp['qty']); ?></td>
-                                    <td class="py-1 px-2 text-xs text-green-400 font-medium text-right border-b border-slate-800 border-opacity-50">$<?php echo number_format($mp['total_ventas'], 2); ?></td>
-                                </tr>
-                            <?php
-}?>
-                        </tbody>
-                    </table>
-                </div>
+                <p class="text-sm text-slate-400">Detailed matrix list of products showing quantity sold per waiter.</p>
             </div>
+            <button onclick="exportMatrixToExcel()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium py-2 px-4 rounded shadow transition-colors flex items-center">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                Export to Excel
+            </button>
+        </div>
+        
+        <div class="overflow-auto max-h-[500px]">
+            <table class="w-full text-left border-collapse text-sm whitespace-nowrap" id="itemsSoldMatrix">
+                <thead class="sticky top-0 bg-[#1e1b4b] z-10 shadow">
+                    <tr>
+                        <th class="py-1 px-2 text-slate-200 text-xs font-bold border-b border-slate-700 bg-[#1e1b4b] sticky left-0 z-20">Product</th>
+                        <?php foreach ($waiter_cols as $w): ?>
+                            <th class="py-1 px-2 text-slate-400 text-xs border-b border-slate-700 text-center"><?php echo htmlspecialchars($w); ?> (Qty)</th>
+                        <?php
+endforeach; ?>
+                        <th class="py-1 px-2 text-slate-200 text-xs font-bold border-b border-slate-700 text-right bg-[#1e1b4b] sticky right-0 z-20 border-l border-slate-700">Qty</th>
+                        <th class="py-1 px-2 text-green-400 text-xs font-bold border-b border-slate-700 text-right bg-[#1e1b4b] sticky right-0 z-20">Net Sales</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (empty($pivot_data)): ?>
+                        <tr><td colspan="<?php echo count($waiter_cols) + 3; ?>" class="py-4 text-center text-slate-500">Sin datos para los filtros seleccionados</td></tr>
+                    <?php
+else: ?>
+                        <?php foreach ($pivot_data as $row): ?>
+                            <tr class="hover:bg-white/5 transition-colors">
+                                <td class="py-1 px-2 text-xs text-slate-200 border-b border-slate-800 border-opacity-50 font-medium sticky left-0 bg-[#0f172a] group-hover:bg-[#1a2235]">
+                                    <?php echo htmlspecialchars($row['platillo']); ?>
+                                </td>
+                                
+                                <?php foreach ($waiter_cols as $w):
+            $qty = isset($row['waiters'][$w]) ? $row['waiters'][$w] : 0;
+?>
+                                    <td class="py-1 px-2 text-xs text-slate-400 text-center border-b border-slate-800 border-opacity-50">
+                                        <?php echo $qty > 0 ? htmlspecialchars($qty) : ''; ?>
+                                    </td>
+                                <?php
+        endforeach; ?>
+                                
+                                <td class="py-1 px-2 text-xs text-slate-100 font-semibold text-right border-b border-slate-800 border-opacity-50 sticky right-0 bg-[#0f172a] border-l border-slate-700">
+                                    <?php echo htmlspecialchars($row['tot_qty']); ?>
+                                </td>
+                                <td class="py-1 px-2 text-xs text-green-400 font-bold text-right border-b border-slate-800 border-opacity-50 sticky right-0 bg-[#0f172a]">
+                                    $<?php echo number_format($row['tot_val'], 2); ?>
+                                </td>
+                            </tr>
+                        <?php
+    endforeach; ?>
+                    <?php
+endif; ?>
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -439,6 +472,35 @@ endforeach; ?>
 <footer class="gi-footer">
   &copy; <?php echo date('Y'); ?> <a href="https://galileoinnova.com" target="_blank">GalileoInnova</a> &middot; Restaurant Intelligence Suite &middot; All rights reserved.
 </footer>
+
+<script>
+function exportMatrixToExcel() {
+    let table = document.getElementById("itemsSoldMatrix");
+    let rows = table.querySelectorAll("tr");
+    let csv = [];
+    
+    for (let i = 0; i < rows.length; i++) {
+        let row = [], cols = rows[i].querySelectorAll("td, th");
+        
+        for (let j = 0; j < cols.length; j++) {
+            let data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, "").trim();
+            // Evitamos que Excel rompa las comas internamente al parsear
+            data = data.replace(/"/g, '""');
+            row.push('"' + data + '"');
+        }
+        csv.push(row.join(","));
+    }
+
+    let csvFile = new Blob(["\uFEFF" + csv.join("\n")], { type: "text/csv;charset=utf-8;" });
+    let downloadLink = document.createElement("a");
+    downloadLink.download = "items_sold_matrix.csv";
+    downloadLink.href = window.URL.createObjectURL(csvFile);
+    downloadLink.style.display = "none";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+}
+</script>
 
 </body>
 </html>
