@@ -114,8 +114,14 @@ $stmt_mesero->execute($params);
 $rendimiento_meseros = $stmt_mesero->fetchAll();
 
 // 4. Platos más vendidos
-$stmt_platos = $pdo->prepare("SELECT platillo, SUM(cantidad) as total_cantidad, SUM(monto_venta) as total_ventas FROM restaurantes_ventas " . $where_clause . " GROUP BY platillo ORDER BY total_ventas DESC");
-$stmt_platos->execute($params);
+$top_where = "WHERE fecha >= :start_date AND fecha <= :end_date";
+$top_params = ['start_date' => $start_date, 'end_date' => $end_date];
+if (!empty($restaurante_filter)) {
+    $top_where .= " AND restaurante = :restaurante";
+    $top_params['restaurante'] = $restaurante_filter;
+}
+$stmt_platos = $pdo->prepare("SELECT platillo, SUM(cantidad) as total_cantidad, SUM(monto_venta) as total_ventas FROM restaurantes_ventas " . $top_where . " GROUP BY platillo ORDER BY total_ventas DESC");
+$stmt_platos->execute($top_params);
 $top_platos = $stmt_platos->fetchAll();
 
 // 5. Catálogo de Precios — filtrado por restaurante seleccionado
