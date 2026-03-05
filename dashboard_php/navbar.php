@@ -27,6 +27,7 @@ $gi_user = $_SESSION['gi_user'] ?? 'admin';
     <a href="#" onclick="window.open('reporte_mesero.php','rep_mesero','width=1150,height=820,scrollbars=yes,resizable=yes');return false;"
        class="gi-nav-btn" style="color:#c084fc;">👤 Mesero</a>
     <a href="admin_datos.php"  class="gi-nav-btn gi-nav-admin <?php echo strpos($_SERVER['PHP_SELF'], 'admin_datos') !== false ? 'active' : ''; ?>">🗂 Admin</a>
+    <a href="agents.php"       class="gi-nav-btn gi-nav-agents <?php echo strpos($_SERVER['PHP_SELF'], 'agents') !== false ? 'active' : ''; ?>">🤖 Agents</a>
     <?php echo $extra_btns; ?>
   </nav>
 
@@ -79,6 +80,9 @@ $gi_user = $_SESSION['gi_user'] ?? 'admin';
 .gi-nav-admin       { color: #f59e0b; }
 .gi-nav-admin:hover { color: #fbbf24; background: rgba(245,158,11,0.1); }
 .gi-nav-admin.active{ background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.3); }
+.gi-nav-agents       { color: #818cf8; }
+.gi-nav-agents:hover { color: #a5b4fc; background: rgba(99,102,241,0.1); }
+.gi-nav-agents.active{ background: rgba(99,102,241,0.12); border-color: rgba(99,102,241,0.3); }
 
 .gi-user-info { display: flex; align-items: center; gap: 10px; }
 .gi-avatar    { font-size: 18px; }
