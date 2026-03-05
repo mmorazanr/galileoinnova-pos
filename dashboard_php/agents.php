@@ -19,7 +19,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['id_sync']) && !empty
 
 // ── Fetch All Agents ──────────────────────────────────────────────────────
 $agents = $pdo->query("SELECT * FROM sync_agents ORDER BY last_heartbeat DESC")->fetchAll();
-$now = new DateTime();
+// The agent saves datetime in its local timezone (e.g. America/Bogota or EST)
+$now = new DateTime('now');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -85,13 +86,30 @@ else: ?>
 
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <?php foreach ($agents as $ag):
-        $hb = $ag['last_heartbeat'] ? new DateTime($ag['last_heartbeat']) : null;
-        $diff_min = $hb ? round(($now->getTimestamp() - $hb->getTimestamp()) / 60) : 9999;
+        $hb_str = $ag['last_heartbeat'];
+        // Assume MariaDB string is already in local Server time, so no explicit TZ conversion needed to diff with $now
+        $hb = $hb_str ? new DateTime($hb_str) : null;
+
+        $diff_min = 9999;
+        if ($hb) {
+            $diff_seconds = $now->getTimestamp() - $hb->getTimestamp();
+            // Si el servidor web está en UTC y el restaurante en EST, hay desfase (5 hrs).
+            // Lo corregimos simple: ignoramos el timezone de $now y usamos diff puro de hora local.
+            $now_local = new DateTime(date('Y-m-d H:i:s'));
+            $diff_seconds = $now_local->getTimestamp() - $hb->getTimestamp();
+            $diff_min = round($diff_seconds / 60);
+        }
+
         $online_class = $diff_min <= 5 ? 'dot-online' : ($diff_min <= 15 ? 'dot-warn' : 'dot-offline');
         $online_label = $diff_min <= 5 ? 'Online' : ($diff_min <= 15 ? 'Delayed' : 'Offline');
         $status = strtolower($ag['status'] ?? 'stopped');
         $badge_class = "badge-$status";
         $pending = $ag['pending_command'] ?? '';
+
+        // Fetch logs (last 5 days synced) for this agent
+        $stmtLogs = $pdo->prepare("SELECT dia_sincronizado, fecha_sincronizada FROM sync_agents_logs WHERE id_sync = :id ORDER BY dia_sincronizado DESC LIMIT 5");
+        $stmtLogs->execute([':id' => $ag['id_sync']]);
+        $agentLogs = $stmtLogs->fetchAll();
 ?>
         <div class="glass-panel p-6">
             <!-- Header -->
@@ -148,6 +166,28 @@ else: ?>
                     <?php
         endif; ?>
                 </div>
+            </div>
+
+            <!-- Sync Logs -->
+            <div class="mb-5 bg-slate-800/50 rounded-lg p-3">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Recent Synced Days</span>
+                </div>
+                <?php if (empty($agentLogs)): ?>
+                    <div class="text-slate-500 text-xs italic">No sync logs found yet.</div>
+                <?php
+        else: ?>
+                    <div class="space-y-1">
+                        <?php foreach ($agentLogs as $log): ?>
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-slate-300 font-mono"><?php echo htmlspecialchars($log['dia_sincronizado']); ?></span>
+                                <span class="text-slate-500">Synced at: <?php echo htmlspecialchars($log['fecha_sincronizada']); ?></span>
+                            </div>
+                        <?php
+            endforeach; ?>
+                    </div>
+                <?php
+        endif; ?>
             </div>
 
             <!-- Command Bar -->

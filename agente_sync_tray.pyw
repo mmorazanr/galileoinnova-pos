@@ -543,10 +543,7 @@ class SyncWorker(QThread):
                         if d == 'Net Sales': metrics['net_sales'] = float(r[1] or 0)
                         elif d == 'Grand Control Total': metrics['change_in_gc_total'] = float(r[1] or 0)
 
-                    push_cursor.execute(
-                        "DELETE FROM restaurantes_diario_media WHERE restaurante=%s AND fecha=%s",
-                        (rest, fecha_str)
-                    )
+                    push_cursor.execute("DELETE FROM restaurantes_diario_media WHERE restaurante=%s AND fecha=%s", (rest, fecha_str))
                     push_cursor.execute("""INSERT INTO restaurantes_diario_media
                         (restaurante, fecha, cash, employee_disc, error_corrects, gratuity, mgr_disc, mgr_void,
                          sales_transfer_in, sales_transfer_out, service_balance, tax_1, tips_paid, net_sales, change_in_gc_total)
@@ -555,6 +552,16 @@ class SyncWorker(QThread):
                          metrics['error_corrects'], metrics['gratuity'], metrics['mgr_disc'], metrics['mgr_void'],
                          metrics['sales_transfer_in'], metrics['sales_transfer_out'], metrics['service_balance'],
                          metrics['tax_1'], metrics['tips_paid'], metrics['net_sales'], metrics['change_in_gc_total']))
+
+                    try:
+                        ahora = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        push_cursor.execute("""
+                            INSERT INTO sync_agents_logs (id_sync, dia_sincronizado, fecha_sincronizada)
+                            VALUES (%s, %s, %s)
+                            ON DUPLICATE KEY UPDATE fecha_sincronizada = VALUES(fecha_sincronizada)
+                        """, (self.id_sync, fecha_str, ahora))
+                    except Exception as le:
+                        self._log(f"No se pudo guardar log para {fecha_str}: {le}", "warning")
 
                     remote_conn.commit()
 
