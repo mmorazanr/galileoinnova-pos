@@ -9,7 +9,7 @@ $msg = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['id_sync']) && !empty($_POST['command'])) {
     $id = $_POST['id_sync'];
     $cmd = $_POST['command'];
-    $allowed = ['clear_logs', 'pause', 'resume', 'restart', 'sync_now'];
+    $allowed = ['clear_logs', 'pause', 'resume', 'sync_now'];
     if (in_array($cmd, $allowed)) {
         $stmt = $pdo->prepare("UPDATE sync_agents SET pending_command = :cmd WHERE id_sync = :id");
         $stmt->execute([':cmd' => $cmd, ':id' => $id]);
@@ -159,7 +159,6 @@ else: ?>
                     <option value="clear_logs">🗑  Clear Logs</option>
                     <option value="pause">⏸  Pause Sync</option>
                     <option value="resume">▶  Resume Sync</option>
-                    <option value="restart">🔄  Restart Agent</option>
                 </select>
                 <button type="submit"
                     onclick="return this.form.command.value ? confirm('Send command to this agent?') : (alert('Select a command first.'), false)"

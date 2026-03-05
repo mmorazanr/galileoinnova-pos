@@ -224,17 +224,6 @@ class HeartbeatWorker(QThread):
             self.sync_worker.resume()
         elif cmd == "sync_now":
             self.sync_worker.force_sync()
-        elif cmd == "restart":
-            logger.info("Reiniciando el agente. Lanzando nuevo proceso.")
-            import os
-            import sys
-            # Use os.startfile to prevent inheriting PyInstaller _MEIPASS environment vars
-            if hasattr(os, 'startfile'):
-                os.startfile(sys.executable)
-            else:
-                import subprocess
-                subprocess.Popen([sys.executable] + sys.argv[1:])
-            os._exit(0)
 
 class SyncWorker(QThread):
     log_signal    = pyqtSignal(str, str)   # (mensaje, nivel)
