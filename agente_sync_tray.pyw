@@ -580,7 +580,7 @@ class SyncWorker(QThread):
                     c_cursor.execute("""
                         INSERT INTO agent_sync_history (id_sync, fecha_ciclo, dias_sincronizados, detalle)
                         VALUES (%s, %s, %s, %s)
-                    """, (self.id_sync, ahora, len(dias_sincronizados_nombres), dt_desc))
+                    """, (cfg.get('id_sync', 'Unknown'), ahora, len(dias_sincronizados_nombres), dt_desc))
                     remote_conn.commit()
                     c_cursor.close()
                 except Exception as log_e:
@@ -1000,6 +1000,8 @@ class MainWindow(QMainWindow):
             QPushButton#btnPause:hover { background: #eab308; }
             QPushButton#btnResume { background: #16a34a; color: white; }
             QPushButton#btnResume:hover { background: #22c55e; }
+            QPushButton#btnForce { background: #0284c7; color: white; }
+            QPushButton#btnForce:hover { background: #0369a1; }
             QPushButton#btnLog    { background: #1e40af; color: white; }
             QPushButton#btnLog:hover { background: #2563eb; }
             QPushButton#btnExit   { background: #7f1d1d; color: white; }
@@ -1043,37 +1045,45 @@ class MainWindow(QMainWindow):
         self.log_view.setReadOnly(True)
         layout.addWidget(self.log_view, stretch=1)
 
-        # Buttons
-        btn_row = QHBoxLayout()
-        self.btn_pause  = QPushButton("⏸  Pausar")
+        # Buttons Row 1
+        btn_row1 = QHBoxLayout()
+        self.btn_force = QPushButton("⚡ Sincronizar Ahora")
+        self.btn_force.setObjectName("btnForce")
+        self.btn_force.clicked.connect(self._force_sync)
+        btn_row1.addWidget(self.btn_force)
+
+        self.btn_pause = QPushButton("⏸  Pausar")
         self.btn_pause.setObjectName("btnPause")
         self.btn_pause.clicked.connect(self._toggle_pause)
-        btn_row.addWidget(self.btn_pause)
+        btn_row1.addWidget(self.btn_pause)
 
         btn_log = QPushButton("📄 Abrir Log")
         btn_log.setObjectName("btnLog")
         btn_log.clicked.connect(lambda: os.startfile(LOG_FILE) if os.path.exists(LOG_FILE) else None)
-        btn_row.addWidget(btn_log)
+        btn_row1.addWidget(btn_log)
+        btn_row1.addStretch()
+        layout.addLayout(btn_row1)
 
+        # Buttons Row 2
+        btn_row2 = QHBoxLayout()
         btn_startup = QPushButton("🚀 Inicio con Windows")
         btn_startup.setObjectName("btnLog")
         btn_startup.clicked.connect(self._toggle_startup)
-        btn_row.addWidget(btn_startup)
+        btn_row2.addWidget(btn_startup)
         self.btn_startup = btn_startup
 
         btn_admin = QPushButton("🗂  Administrar Datos")
         btn_admin.setObjectName("btnLog")
         btn_admin.clicked.connect(self._open_admin)
-        btn_row.addWidget(btn_admin)
+        btn_row2.addWidget(btn_admin)
 
-        btn_row.addStretch()
+        btn_row2.addStretch()
 
         btn_exit = QPushButton("✖  Cerrar Programa")
         btn_exit.setObjectName("btnExit")
         btn_exit.clicked.connect(self._confirm_exit)
-        btn_row.addWidget(btn_exit)
-
-        layout.addLayout(btn_row)
+        btn_row2.addWidget(btn_exit)
+        layout.addLayout(btn_row2)
         self._refresh_startup_label()
 
     def _setup_logging(self):
