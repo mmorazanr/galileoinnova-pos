@@ -374,6 +374,7 @@ class SyncWorker(QThread):
                 dias_nuevos    = 0
                 dias_ya_sync   = 0
                 dias_actualizados = 0
+                dias_sincronizados_nombres = []
 
                 for idx, (s_day, fecha_str) in enumerate(days_to_sync, 1):
                     if not self._running:
@@ -553,17 +554,8 @@ class SyncWorker(QThread):
                          metrics['sales_transfer_in'], metrics['sales_transfer_out'], metrics['service_balance'],
                          metrics['tax_1'], metrics['tips_paid'], metrics['net_sales'], metrics['change_in_gc_total']))
 
-                    try:
-                        ahora = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                        push_cursor.execute("""
-                            INSERT INTO sync_agents_logs (id_sync, dia_sincronizado, fecha_sincronizada)
-                            VALUES (%s, %s, %s)
-                            ON DUPLICATE KEY UPDATE fecha_sincronizada = VALUES(fecha_sincronizada)
-                        """, (self.id_sync, fecha_str, ahora))
-                    except Exception as le:
-                        self._log(f"No se pudo guardar log para {fecha_str}: {le}", "warning")
-
                     remote_conn.commit()
+                    dias_sincronizados_nombres.append(fecha_str)
 
                 # ── Resumen ciclo ────────────────────────────────────────
                 self._log("─" * 48, "info")
@@ -575,6 +567,24 @@ class SyncWorker(QThread):
                     f"{total_rows_new} filas subidas",
                     "info"
                 )
+
+                # ── Enviar Histórico de Ejecución a MariaDB ────────────────
+                try:
+                    c_cursor = remote_conn.cursor()
+                    ahora = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    if dias_sincronizados_nombres:
+                        dt_desc = f"día{'s' if len(dias_sincronizados_nombres)>1 else ''} {', '.join(dias_sincronizados_nombres)} sincronizado{'s' if len(dias_sincronizados_nombres)>1 else ''}."
+                    else:
+                        dt_desc = "0 dias sincronizados."
+                        
+                    c_cursor.execute("""
+                        INSERT INTO agent_sync_history (id_sync, fecha_ciclo, dias_sincronizados, detalle)
+                        VALUES (%s, %s, %s, %s)
+                    """, (self.id_sync, ahora, len(dias_sincronizados_nombres), dt_desc))
+                    remote_conn.commit()
+                    c_cursor.close()
+                except Exception as log_e:
+                    self._log(f"Error al guardar agent_sync_history: {log_e}", "error")
 
                 ts_ok = datetime.datetime.now().strftime('%H:%M:%S')
                 self.status_signal.emit(f"✅ Sync OK {ts_ok} — próx. en {interval}s", ICON_GREEN)
