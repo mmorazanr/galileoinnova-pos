@@ -1118,6 +1118,10 @@ class MainWindow(QMainWindow):
             self.btn_pause.setObjectName("btnResume")
             self._refresh_style()
 
+    def _force_sync(self):
+        if self.worker:
+            self.worker.force_sync()
+
     def _refresh_style(self):
         self.btn_pause.style().unpolish(self.btn_pause)
         self.btn_pause.style().polish(self.btn_pause)
