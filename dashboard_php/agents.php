@@ -57,6 +57,11 @@ $now = new DateTime('now');
         .dot-warn    { background: #facc15; box-shadow: 0 0 8px #facc15; }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
         .animate-pulse { animation: pulse 2s infinite; }
+        
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
     </style>
 </head>
 <body class="font-sans">
@@ -98,8 +103,8 @@ else: ?>
         $badge_class = "badge-$status";
         $pending = $ag['pending_command'] ?? '';
 
-        // Fetch logs (last 5 global sync attempts) for this agent
-        $stmtLogs = $pdo->prepare("SELECT fecha_ciclo, dias_sincronizados, detalle FROM agent_sync_history WHERE id_sync = :id ORDER BY fecha_ciclo DESC LIMIT 5");
+        // Fetch logs (last 50 global sync attempts) for this agent
+        $stmtLogs = $pdo->prepare("SELECT fecha_ciclo, dias_sincronizados, detalle FROM agent_sync_history WHERE id_sync = :id ORDER BY fecha_ciclo DESC LIMIT 50");
         $stmtLogs->execute([':id' => $ag['id_sync']]);
         $agentLogs = $stmtLogs->fetchAll();
 ?>
@@ -113,11 +118,16 @@ else: ?>
                     </div>
                     <code class="text-xs text-slate-500 font-mono"><?php echo htmlspecialchars($ag['id_sync']); ?></code>
                 </div>
-                <div class="flex flex-col items-end gap-2">
-                    <span class="text-xs px-2 py-0.5 rounded-full font-semibold <?php echo $badge_class; ?>">
-                        <?php echo strtoupper($status); ?>
+                <div class="flex flex-col items-end gap-1">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-slate-500"><?php echo $online_label; ?></span>
+                        <span class="text-xs px-2 py-0.5 rounded-full font-semibold <?php echo $badge_class; ?>">
+                            <?php echo strtoupper($status); ?>
+                        </span>
+                    </div>
+                    <span class="text-[10px] text-slate-500 mt-1">
+                        Page refreshes every 60s &nbsp;·&nbsp; <a href="agents.php" class="text-blue-500 hover:text-blue-400 hover:underline">Refresh now</a>
                     </span>
-                    <span class="text-xs text-slate-500"><?php echo $online_label; ?></span>
                 </div>
             </div>
 
@@ -186,7 +196,7 @@ else: ?>
                     <div class="text-slate-500 text-xs italic">No sync logs found yet.</div>
                 <?php
         else: ?>
-                    <div class="space-y-1">
+                    <div class="space-y-1 overflow-y-auto max-h-40 pr-2 custom-scrollbar">
                         <?php foreach ($agentLogs as $log): ?>
                             <div class="flex justify-between items-center text-xs">
                                 <?php
@@ -216,11 +226,6 @@ else: ?>
     <?php
 endif; ?>
 
-    <!-- Auto-refresh note -->
-    <p class="text-center text-slate-600 text-xs mt-8">
-        Page refreshes automatically every 60 seconds &nbsp;·&nbsp;
-        <a href="agents.php" class="text-blue-600 hover:underline">Refresh now</a>
-    </p>
 </div>
 
 <script>
