@@ -83,8 +83,21 @@ def get_lan_ip():
 
 
 def load_config():
-    with open(os.path.join(BASE, "config.json"), "r", encoding="utf-8") as f:
-        return json.load(f)
+    try:
+        with open(os.path.join(BASE, "config.json"), "r", encoding="utf-8") as f:
+            return json.load(f)
+    except json.decoder.JSONDecodeError as e:
+        msg = f"Error de sintaxis en config.json:\n\n{str(e)}\n\nPor favor, verifica que no haya comas extras al final de las líneas."
+        try:
+            from PyQt5.QtWidgets import QMessageBox
+            msg_box = QMessageBox()
+            msg_box.setIcon(QMessageBox.Critical)
+            msg_box.setWindowTitle("Error de Configuración")
+            msg_box.setText(msg)
+            msg_box.exec_()
+        except:
+            print(msg)
+        sys.exit(1)
 
 
 def make_tray_icon(color="#22c55e"):
