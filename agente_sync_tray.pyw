@@ -11,8 +11,9 @@ import datetime
 import logging
 import socket
 import hashlib
+import urllib.request
 from logging.handlers import RotatingFileHandler
-AGENT_VERSION = "2.2-Tray"
+AGENT_VERSION = "2.3-Tray"
 import threading
 import winreg
 
@@ -81,6 +82,13 @@ def get_lan_ip():
     except Exception:
         return "unknown"
 
+def get_wan_ip():
+    try:
+        req = urllib.request.urlopen("https://api.ipify.org", timeout=5)
+        return req.read().decode("utf-8").strip()
+    except Exception:
+        return "unknown"
+
 
 def load_config():
     try:
@@ -141,6 +149,8 @@ class HeartbeatWorker(QThread):
         self._running = False
 
     def run(self):
+        public_ip = get_wan_ip()
+        consecutive_errors = 0
         while self._running:
             try:
                 status_str = "paused" if self.sync_worker.is_paused else "running"
@@ -158,16 +168,17 @@ class HeartbeatWorker(QThread):
                 cur = conn.cursor()
 
                 cur.execute("""
-                    INSERT INTO sync_agents (id_sync, restaurante, ip_lan, db_path, status, last_heartbeat, version)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s)
+                    INSERT INTO sync_agents (id_sync, restaurante, ip_lan, ip_public, db_path, status, last_heartbeat, version)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                     ON DUPLICATE KEY UPDATE
                         restaurante    = VALUES(restaurante),
                         ip_lan         = VALUES(ip_lan),
+                        ip_public      = VALUES(ip_public),
                         db_path        = VALUES(db_path),
                         status         = VALUES(status),
                         last_heartbeat = VALUES(last_heartbeat),
                         version        = VALUES(version)
-                """, (self.id_sync, self.cfg.get('restaurant_name','Unknown'), ip, self.cfg.get('local_db_path',''), status_str, now, AGENT_VERSION))
+                """, (self.id_sync, self.cfg.get('restaurant_name','Unknown'), ip, public_ip, self.cfg.get('local_db_path',''), status_str, now, AGENT_VERSION))
                 conn.commit()
 
                 cur.execute("SELECT pending_command FROM sync_agents WHERE id_sync = %s", (self.id_sync,))
@@ -181,10 +192,16 @@ class HeartbeatWorker(QThread):
 
                 cur.close()
                 conn.close()
+                consecutive_errors = 0
             except Exception as e:
                 logger.warning(f"Heartbeat error: {e}")
+                consecutive_errors += 1
+                if "1129" in str(e):
+                    consecutive_errors = max(10, consecutive_errors)
 
-            for _ in range(60):
+            # Sleep base is 60s. Back-off exponent si hay errores para no bloquear IP.
+            sleep_time = 60 if consecutive_errors < 3 else min(600, 60 * consecutive_errors)
+            for _ in range(sleep_time):
                 if not self._running:
                     break
                 import time
@@ -205,8 +222,13 @@ class HeartbeatWorker(QThread):
             self.sync_worker.pause()
         elif cmd == "resume":
             self.sync_worker.resume()
+        elif cmd == "sync_now":
+            self.sync_worker.force_sync()
         elif cmd == "restart":
+            logger.info("Reiniciando el agente. Lanzando nuevo proceso.")
             import os
+            import subprocess
+            subprocess.Popen([sys.executable] + sys.argv)
             os._exit(0)
 
 class SyncWorker(QThread):
@@ -218,7 +240,13 @@ class SyncWorker(QThread):
         super().__init__()
         self._paused  = False
         self._running = True
+        self._force_sync = False
         self._lock    = threading.Lock()
+
+    def force_sync(self):
+        self._force_sync = True
+        self.status_signal.emit("⚡ Sync Forzado", ICON_GREEN)
+        self.log_signal.emit("Sincronización manual forzada desde Dashboard.", "info")
 
     def pause(self):
         self._paused = True
@@ -557,6 +585,12 @@ class SyncWorker(QThread):
                 for remaining in range(interval, 0, -1):
                     if not self._running or self._paused:
                         break
+                    
+                    if self._force_sync:
+                        self._force_sync = False
+                        self._log("⚡ Interrumpiendo espera para Sincronizar Ahora", "info")
+                        break
+
                     if remaining % 30 == 0:
                         self._log(f"⏱  Próxima sincronización en {remaining}s…", "info")
                         self.status_signal.emit(
@@ -564,6 +598,10 @@ class SyncWorker(QThread):
                         )
                     time.sleep(1)
 
+            except mysql.connector.Error as db_e:
+                self._log(f"❌ Error MariaDB: {db_e}", "error")
+                self.status_signal.emit("❌ Error DB", ICON_RED)
+                time.sleep(30)
             except Exception as e:
                 self._log(f"❌ Error de integración: {e}", "error")
                 self.status_signal.emit("❌ Error", ICON_RED)

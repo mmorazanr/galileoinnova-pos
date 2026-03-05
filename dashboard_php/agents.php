@@ -9,7 +9,7 @@ $msg = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['id_sync']) && !empty($_POST['command'])) {
     $id = $_POST['id_sync'];
     $cmd = $_POST['command'];
-    $allowed = ['clear_logs', 'pause', 'resume', 'restart'];
+    $allowed = ['clear_logs', 'pause', 'resume', 'restart', 'sync_now'];
     if (in_array($cmd, $allowed)) {
         $stmt = $pdo->prepare("UPDATE sync_agents SET pending_command = :cmd WHERE id_sync = :id");
         $stmt->execute([':cmd' => $cmd, ':id' => $id]);
@@ -114,8 +114,11 @@ else: ?>
             <!-- Details Grid -->
             <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-xs mb-5">
                 <div>
-                    <span class="text-slate-500 block">IP LAN</span>
-                    <span class="text-slate-200 font-mono"><?php echo htmlspecialchars($ag['ip_lan'] ?? '—'); ?></span>
+                    <span class="text-slate-500 block">IP LAN / WAN</span>
+                    <span class="text-slate-200 font-mono">
+                        <?php echo htmlspecialchars($ag['ip_lan'] ?? '—'); ?> / 
+                        <span class="text-blue-300"><?php echo htmlspecialchars($ag['ip_public'] ?? '—'); ?></span>
+                    </span>
                 </div>
                 <div>
                     <span class="text-slate-500 block">Version</span>
@@ -152,6 +155,7 @@ else: ?>
                 <input type="hidden" name="id_sync" value="<?php echo htmlspecialchars($ag['id_sync']); ?>">
                 <select name="command" class="flex-1 bg-slate-800 border border-slate-600 text-slate-200 text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
                     <option value="">— Select Command —</option>
+                    <option value="sync_now">⚡ Force Sync Now</option>
                     <option value="clear_logs">🗑  Clear Logs</option>
                     <option value="pause">⏸  Pause Sync</option>
                     <option value="resume">▶  Resume Sync</option>
