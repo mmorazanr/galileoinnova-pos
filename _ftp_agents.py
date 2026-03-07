@@ -10,6 +10,7 @@ files = {
     'auth.php': r'c:\ICOM\Database\dashboard_php\auth.php',
     'login.php': r'c:\ICOM\Database\dashboard_php\login.php',
     'reporte_diario.php': r'c:\ICOM\Database\dashboard_php\reporte_diario.php',
+    'manage_users.php': r'c:\ICOM\Database\dashboard_php\manage_users.php',
 }
 
 for remote_name, local_path in files.items():
