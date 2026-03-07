@@ -11,6 +11,7 @@ files = {
     'login.php': r'c:\ICOM\Database\dashboard_php\login.php',
     'reporte_diario.php': r'c:\ICOM\Database\dashboard_php\reporte_diario.php',
     'manage_users.php': r'c:\ICOM\Database\dashboard_php\manage_users.php',
+    'index.php': r'c:\ICOM\Database\dashboard_php\index.php',
     'admin_datos.php': r'c:\ICOM\Database\dashboard_php\admin_datos.php',
 }
 
