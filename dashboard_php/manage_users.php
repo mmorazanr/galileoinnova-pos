@@ -339,6 +339,20 @@ endforeach; ?>
 </div>
 
 <script>
+// Create Form
+function toggleRestList() {
+    const role = document.getElementById('roleSelector').value;
+    const restGroup = document.getElementById('restaurantSelectorGroup');
+    if (role === 'owner') {
+        restGroup.style.display = 'none';
+        const boxes = restGroup.querySelectorAll('input[type="checkbox"]');
+        boxes.forEach(b => b.checked = false);
+    } else {
+        restGroup.style.display = 'block';
+    }
+}
+</script>
+
 <!-- Modal Edit User -->
 <div id="editUserModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);">
     <div class="glass-panel w-full max-w-2xl bg-slate-900 border-slate-600 shadow-2xl relative flex flex-col max-h-[90vh]">
@@ -414,19 +428,6 @@ endforeach; ?>
 </div>
 
 <script>
-// Create Form
-function toggleRestList() {
-    const role = document.getElementById('roleSelector').value;
-    const restGroup = document.getElementById('restaurantSelectorGroup');
-    if (role === 'owner') {
-        restGroup.style.display = 'none';
-        const boxes = restGroup.querySelectorAll('input[type="checkbox"]');
-        boxes.forEach(b => b.checked = false);
-    } else {
-        restGroup.style.display = 'block';
-    }
-}
-
 // Edit Form
 function toggleEditRestList() {
     const role = document.getElementById('editRoleSelector').value;
