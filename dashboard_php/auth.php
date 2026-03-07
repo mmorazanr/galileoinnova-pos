@@ -45,8 +45,13 @@ function can_view_days()
     return is_owner() || (isset($_SESSION['gi_can_view']) && $_SESSION['gi_can_view']);
 }
 
-function can_delete_days()
+function can_delete_days() // For sync logs
 {
     return is_owner() || (isset($_SESSION['gi_can_delete']) && $_SESSION['gi_can_delete']);
+}
+
+function can_delete_admin_data() // For admin_datos
+{
+    return is_owner() || (isset($_SESSION['gi_can_delete_admin']) && $_SESSION['gi_can_delete_admin']);
 }
 ?>

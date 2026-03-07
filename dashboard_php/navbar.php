@@ -27,9 +27,15 @@ $gi_role = $_SESSION['gi_role'] ?? 'owner';
     <a href="reporte_diario.php" class="gi-nav-btn <?php echo strpos($_SERVER['PHP_SELF'], 'reporte_diario') !== false ? 'active' : ''; ?>">📅 Daily Report</a>
     <a href="#" onclick="window.open('reporte_mesero.php','rep_mesero','width=1150,height=820,scrollbars=yes,resizable=yes');return false;"
        class="gi-nav-btn" style="color:#c084fc;">👤 Mesero</a>
-    <?php if (is_owner()): ?>
+    <?php if (can_delete_admin_data()): ?>
     <a href="admin_datos.php"  class="gi-nav-btn gi-nav-admin <?php echo strpos($_SERVER['PHP_SELF'], 'admin_datos') !== false ? 'active' : ''; ?>">🗂 Admin</a>
+    <?php
+endif; ?>
+    <?php if (can_delete_days()): ?>
     <a href="agents.php"       class="gi-nav-btn gi-nav-agents <?php echo strpos($_SERVER['PHP_SELF'], 'agents') !== false ? 'active' : ''; ?>">🤖 Agents</a>
+    <?php
+endif; ?>
+    <?php if (is_owner()): ?>
     <a href="manage_users.php" class="gi-nav-btn gi-nav-users <?php echo strpos($_SERVER['PHP_SELF'], 'manage_users') !== false ? 'active' : ''; ?>">👥 Users</a>
     <?php
 endif; ?>
