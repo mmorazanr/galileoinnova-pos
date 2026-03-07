@@ -1,8 +1,6 @@
 <?php
 session_start();
-
-define('APP_USER', 'admin');
-define('APP_PASS', 'gcode2025!');
+require_once 'config.php';
 
 $error = '';
 $next = $_GET['next'] ?? 'index.php';
@@ -11,13 +9,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $user = trim($_POST['username'] ?? '');
   $pass = trim($_POST['password'] ?? '');
 
-  if ($user === APP_USER && $pass === APP_PASS) {
+  $stmt = $pdo->prepare("SELECT id, username, password_hash, role, allowed_restaurants, can_view_days, can_delete_days FROM dashboard_users WHERE username = :u LIMIT 1");
+  $stmt->execute([':u' => $user]);
+  $db_user = $stmt->fetch();
+
+  if ($db_user && password_verify($pass, $db_user['password_hash'])) {
     $_SESSION['gi_auth'] = true;
-    $_SESSION['gi_user'] = $user;
+    $_SESSION['gi_user'] = $db_user['username'];
+    $_SESSION['gi_role'] = $db_user['role'];
+    $_SESSION['gi_allowed'] = json_decode($db_user['allowed_restaurants'], true) ?? [];
+    $_SESSION['gi_can_view'] = (bool)$db_user['can_view_days'];
+    $_SESSION['gi_can_delete'] = (bool)$db_user['can_delete_days'];
     $_SESSION['gi_time'] = date('Y-m-d H:i:s');
+
     // Usar solo el nombre base del archivo destino para evitar path duplicado
     // Ej: /restaurantes/index.php  →  index.php
-    $allowed = ['index.php', 'reporte_diario.php', 'admin_datos.php'];
+    $allowed = ['index.php', 'reporte_diario.php', 'admin_datos.php', 'agents.php'];
     $raw = $_POST['next'] ?? 'index.php';
     $dest = basename(parse_url($raw, PHP_URL_PATH) ?? 'index.php');
     if (!in_array($dest, $allowed))

@@ -7,21 +7,26 @@ $msg = '';
 
 // ── Handle Command Submit ─────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['id_sync'])) {
-    $id = $_POST['id_sync'];
-
-    if (!empty($_POST['command'])) {
-        $cmd = $_POST['command'];
-        $allowed = ['clear_logs', 'pause', 'resume', 'sync_now'];
-        if (in_array($cmd, $allowed)) {
-            $stmt = $pdo->prepare("UPDATE sync_agents SET pending_command = :cmd WHERE id_sync = :id");
-            $stmt->execute([':cmd' => $cmd, ':id' => $id]);
-            $msg = "Command '$cmd' queued for agent: " . htmlspecialchars($id);
-        }
+    if (!can_delete_days()) {
+        $msg = "Error: Permisos insuficientes para administrar agentes.";
     }
-    elseif (!empty($_POST['action']) && $_POST['action'] === 'clear_dashboard_logs') {
-        $stmt = $pdo->prepare("DELETE FROM agent_sync_history WHERE id_sync = :id");
-        $stmt->execute([':id' => $id]);
-        $msg = "Dashboard sync history deleted for agent: " . htmlspecialchars($id);
+    else {
+        $id = $_POST['id_sync'];
+
+        if (!empty($_POST['command'])) {
+            $cmd = $_POST['command'];
+            $allowed = ['clear_logs', 'pause', 'resume', 'sync_now'];
+            if (in_array($cmd, $allowed)) {
+                $stmt = $pdo->prepare("UPDATE sync_agents SET pending_command = :cmd WHERE id_sync = :id");
+                $stmt->execute([':cmd' => $cmd, ':id' => $id]);
+                $msg = "Command '$cmd' queued for agent: " . htmlspecialchars($id);
+            }
+        }
+        elseif (!empty($_POST['action']) && $_POST['action'] === 'clear_dashboard_logs') {
+            $stmt = $pdo->prepare("DELETE FROM agent_sync_history WHERE id_sync = :id");
+            $stmt->execute([':id' => $id]);
+            $msg = "Dashboard sync history deleted for agent: " . htmlspecialchars($id);
+        }
     }
 }
 
@@ -99,6 +104,9 @@ else: ?>
 
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <?php foreach ($agents as $ag):
+        if (!can_access_restaurant($ag['restaurante']))
+            continue;
+
         $hb_str = $ag['last_heartbeat'];
         $hb = $hb_str ? new DateTime($hb_str) : null;
 
@@ -179,6 +187,7 @@ else: ?>
             </div>
 
             <!-- Command Bar -->
+            <?php if (can_delete_days()): ?>
             <form method="POST" class="flex items-center gap-3 mb-4 mt-4">
                 <input type="hidden" name="id_sync" value="<?php echo htmlspecialchars($ag['id_sync']); ?>">
                 <select name="command" class="flex-1 bg-slate-800 border border-slate-600 text-slate-200 text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
@@ -194,11 +203,14 @@ else: ?>
                     Send Command
                 </button>
             </form>
+            <?php
+        endif; ?>
 
             <!-- Sync Logs -->
             <div class="mb-5 bg-slate-800/50 rounded-lg p-3">
                 <div class="flex items-center justify-between mb-2">
                     <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Sync History</span>
+                    <?php if (can_delete_days()): ?>
                     <form method="POST" class="inline" onsubmit="return confirm('Are you sure you want to permanently delete all sync history for this agent?');">
                         <input type="hidden" name="id_sync" value="<?php echo htmlspecialchars($ag['id_sync']); ?>">
                         <input type="hidden" name="action" value="clear_dashboard_logs">
@@ -206,6 +218,8 @@ else: ?>
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                         </button>
                     </form>
+                    <?php
+        endif; ?>
                 </div>
                 <?php if (empty($agentLogs)): ?>
                     <div class="text-slate-500 text-xs italic">No sync logs found yet.</div>

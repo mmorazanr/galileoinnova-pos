@@ -9,14 +9,42 @@ $restaurante_filter = isset($_GET['restaurante']) ? $_GET['restaurante'] : '';
 $where_clause = "WHERE fecha >= :start_date AND fecha <= :end_date";
 $params = ['start_date' => $start_date, 'end_date' => $end_date];
 
+$stmt_all = $pdo->prepare("SELECT DISTINCT restaurante FROM restaurantes_diario_media ORDER BY restaurante ASC");
+$stmt_all->execute();
+$db_restaurantes = $stmt_all->fetchAll(PDO::FETCH_COLUMN);
+
+// Filtramos para el select
+$todos_los_restaurantes = [];
+foreach ($db_restaurantes as $r) {
+    if (can_access_restaurant($r)) {
+        $todos_los_restaurantes[] = $r;
+    }
+}
+
+// Security: Si intentan forzar un restaurante no permitido por GET, lo anulamos
+if (!empty($restaurante_filter) && !can_access_restaurant($restaurante_filter)) {
+    $restaurante_filter = '';
+}
+
 if (!empty($restaurante_filter)) {
     $where_clause .= " AND restaurante = :restaurante";
     $params['restaurante'] = $restaurante_filter;
 }
-
-$stmt_all = $pdo->prepare("SELECT DISTINCT restaurante FROM restaurantes_diario_media ORDER BY restaurante ASC");
-$stmt_all->execute();
-$todos_los_restaurantes = $stmt_all->fetchAll(PDO::FETCH_COLUMN);
+elseif (!is_owner()) {
+    // Si no es dueño y no hay filtro específico, restringimos al listado de sus permitidos
+    if (empty($todos_los_restaurantes)) {
+        $where_clause .= " AND 1=0"; // No tiene acceso a nada
+    }
+    else {
+        $in_keys = [];
+        foreach ($todos_los_restaurantes as $idx => $r) {
+            $key = "rest_allowed_" . $idx;
+            $in_keys[] = ":" . $key;
+            $params[$key] = $r;
+        }
+        $where_clause .= " AND restaurante IN (" . implode(',', $in_keys) . ")";
+    }
+}
 
 $sql = "SELECT * FROM restaurantes_diario_media " . $where_clause . " ORDER BY fecha DESC, restaurante ASC";
 $stmt_report = $pdo->prepare($sql);

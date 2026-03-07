@@ -8,6 +8,7 @@
 $page_title = $page_title ?? 'Dashboard';
 $extra_btns = $extra_btns ?? '';
 $gi_user = $_SESSION['gi_user'] ?? 'admin';
+$gi_role = $_SESSION['gi_role'] ?? 'owner';
 ?>
 <!-- ── GalileoInnova Topbar ─────────────────────────────────────────── -->
 <header class="gi-topbar">
@@ -21,19 +22,27 @@ $gi_user = $_SESSION['gi_user'] ?? 'admin';
     </div>
   </div>
 
-  <nav class="gi-nav">
+    <nav class="gi-nav">
     <a href="index.php"        class="gi-nav-btn <?php echo strpos($_SERVER['PHP_SELF'], 'index.php') !== false ? 'active' : ''; ?>">📊 Dashboard</a>
     <a href="reporte_diario.php" class="gi-nav-btn <?php echo strpos($_SERVER['PHP_SELF'], 'reporte_diario') !== false ? 'active' : ''; ?>">📅 Daily Report</a>
     <a href="#" onclick="window.open('reporte_mesero.php','rep_mesero','width=1150,height=820,scrollbars=yes,resizable=yes');return false;"
        class="gi-nav-btn" style="color:#c084fc;">👤 Mesero</a>
+    <?php if (is_owner()): ?>
     <a href="admin_datos.php"  class="gi-nav-btn gi-nav-admin <?php echo strpos($_SERVER['PHP_SELF'], 'admin_datos') !== false ? 'active' : ''; ?>">🗂 Admin</a>
     <a href="agents.php"       class="gi-nav-btn gi-nav-agents <?php echo strpos($_SERVER['PHP_SELF'], 'agents') !== false ? 'active' : ''; ?>">🤖 Agents</a>
+    <?php
+endif; ?>
     <?php echo $extra_btns; ?>
   </nav>
 
   <div class="gi-user-info">
     <span class="gi-avatar">👤</span>
-    <span class="gi-username"><?php echo htmlspecialchars($gi_user); ?></span>
+    <span class="gi-username">
+        <?php echo htmlspecialchars($gi_user); ?> 
+        <span style="font-size: 9px; padding: 2px 5px; background: rgba(59,130,246,0.2); border-radius: 4px; margin-left: 4px; color: #60a5fa; text-transform: uppercase;">
+            <?php echo htmlspecialchars($gi_role); ?>
+        </span>
+    </span>
     <a href="?logout=1" class="gi-logout">Salir ↗</a>
   </div>
 </header>
