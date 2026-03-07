@@ -1,4 +1,5 @@
 <?php
+require_once 'auth.php';
 require_once 'config.php';
 
 // ── Manejar acciones POST ──────────────────────────────────────────────
@@ -6,71 +7,89 @@ $mensaje = '';
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $accion = $_POST['accion'] ?? '';
-  $restaurante = $_POST['restaurante'] ?? '';
-  $confirm_key = $_POST['confirm_key'] ?? '';
-
-  // ── Eliminar días seleccionados ──
-  if ($accion === 'delete_days') {
-    $fechas = $_POST['fechas'] ?? [];
-    $confirma = trim($_POST['confirma'] ?? '');
-
-    if (empty($fechas)) {
-      $error = 'Seleccione al menos un día.';
-    }
-    elseif ($confirma !== 'CONFIRMAR') {
-      $error = 'Debe escribir CONFIRMAR exactamente para proceder.';
-    }
-    else {
-      $tablas = ['restaurantes_ventas', 'restaurantes_kpi', 'restaurantes_kpi_mesero',
-        'restaurantes_mesero_media', 'restaurantes_diario_media'];
-      $total = 0;
-      foreach ($tablas as $tabla) {
-        $ph = implode(',', array_fill(0, count($fechas), '?'));
-        $params = array_merge([$restaurante], $fechas);
-        $stmt = $pdo->prepare("DELETE FROM $tabla WHERE restaurante=? AND fecha IN ($ph)");
-        $stmt->execute($params);
-        $total += $stmt->rowCount();
-      }
-      $mensaje = "✅ Se eliminaron $total registros de " . count($fechas) . " día(s) de '$restaurante'. El sync puede restaurarlos.";
-    }
+  if (!can_delete_days()) {
+    $error = 'No tiene permisos para eliminar registros.';
   }
+  else {
+    $accion = $_POST['accion'] ?? '';
+    $restaurante = $_POST['restaurante'] ?? '';
+    $confirm_key = $_POST['confirm_key'] ?? '';
 
-  // ── Eliminar TODO el restaurante ──
-  if ($accion === 'delete_all') {
-    $confirma1 = trim($_POST['confirma1'] ?? '');
-    $confirma2 = trim($_POST['confirma2'] ?? '');
-    $confirma3 = trim($_POST['confirma3'] ?? '');
+    // ── Eliminar días seleccionados ──
+    if ($accion === 'delete_days') {
+      $fechas = $_POST['fechas'] ?? [];
+      $confirma = trim($_POST['confirma'] ?? '');
 
-    if ($confirma1 !== $restaurante) {
-      $error = 'El nombre del restaurante no coincide. Operación cancelada.';
-    }
-    elseif ($confirma2 !== 'CONFIRMAR') {
-      $error = 'Debe escribir CONFIRMAR exactamente.';
-    }
-    elseif ($confirma3 !== 'ELIMINAR TODO') {
-      $error = 'Debe escribir ELIMINAR TODO exactamente.';
-    }
-    else {
-      $tablas = ['restaurantes_ventas', 'restaurantes_kpi', 'restaurantes_kpi_mesero',
-        'restaurantes_mesero_media', 'restaurantes_diario_media'];
-      $total = 0;
-      foreach ($tablas as $tabla) {
-        $stmt = $pdo->prepare("DELETE FROM $tabla WHERE restaurante=?");
-        $stmt->execute([$restaurante]);
-        $total += $stmt->rowCount();
+      if (empty($fechas)) {
+        $error = 'Seleccione al menos un día.';
       }
-      $mensaje = "✅ Se eliminaron $total registros de '$restaurante'. Lista limpia para re-sincronizar.";
+      elseif ($confirma !== 'CONFIRMAR') {
+        $error = 'Debe escribir CONFIRMAR exactamente para proceder.';
+      }
+      else {
+        $tablas = ['restaurantes_ventas', 'restaurantes_kpi', 'restaurantes_kpi_mesero',
+          'restaurantes_mesero_media', 'restaurantes_diario_media'];
+        $total = 0;
+        foreach ($tablas as $tabla) {
+          $ph = implode(',', array_fill(0, count($fechas), '?'));
+          $params = array_merge([$restaurante], $fechas);
+          $stmt = $pdo->prepare("DELETE FROM $tabla WHERE restaurante=? AND fecha IN ($ph)");
+          $stmt->execute($params);
+          $total += $stmt->rowCount();
+        }
+        $mensaje = "✅ Se eliminaron $total registros de " . count($fechas) . " día(s) de '$restaurante'. El sync puede restaurarlos.";
+      }
+    }
+
+    // ── Eliminar TODO el restaurante ──
+    if ($accion === 'delete_all') {
+      $confirma1 = trim($_POST['confirma1'] ?? '');
+      $confirma2 = trim($_POST['confirma2'] ?? '');
+      $confirma3 = trim($_POST['confirma3'] ?? '');
+
+      if ($confirma1 !== $restaurante) {
+        $error = 'El nombre del restaurante no coincide. Operación cancelada.';
+      }
+      elseif ($confirma2 !== 'CONFIRMAR') {
+        $error = 'Debe escribir CONFIRMAR exactamente.';
+      }
+      elseif ($confirma3 !== 'ELIMINAR TODO') {
+        $error = 'Debe escribir ELIMINAR TODO exactamente.';
+      }
+      else {
+        $tablas = ['restaurantes_ventas', 'restaurantes_kpi', 'restaurantes_kpi_mesero',
+          'restaurantes_mesero_media', 'restaurantes_diario_media'];
+        $total = 0;
+        foreach ($tablas as $tabla) {
+          $stmt = $pdo->prepare("DELETE FROM $tabla WHERE restaurante=?");
+          $stmt->execute([$restaurante]);
+          $total += $stmt->rowCount();
+        }
+        $mensaje = "✅ Se eliminaron $total registros de '$restaurante'. Lista limpia para re-sincronizar.";
+      }
     }
   }
 }
 
 // ── Cargar restaurantes ────────────────────────────────────────────────
 $stmt = $pdo->query("SELECT DISTINCT restaurante FROM restaurantes_diario_media ORDER BY restaurante");
-$restaurantes = $stmt->fetchAll(PDO::FETCH_COLUMN);
+$db_restaurantes = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+$restaurantes = [];
+foreach ($db_restaurantes as $r) {
+  if (can_access_restaurant($r)) {
+    $restaurantes[] = $r;
+  }
+}
 
 // ── Restaurante seleccionado ───────────────────────────────────────────
-$sel_rest = $_GET['restaurante'] ?? ($restaurantes[0] ?? '');
+$req_rest = $_GET['restaurante'] ?? '';
+if (!empty($req_rest) && !can_access_restaurant($req_rest)) {
+  $sel_rest = $restaurantes[0] ?? '';
+}
+else {
+  $sel_rest = $req_rest ?: ($restaurantes[0] ?? '');
+}
 $date_from = $_GET['date_from'] ?? '';
 $date_to = $_GET['date_to'] ?? '';
 
@@ -205,6 +224,7 @@ $total_items = array_sum(array_column($dias, 'cnt_ventas'));
   <h1>🗂 <span>Admin</span> Días Contables</h1>
   <a href="index.php" class="back-btn">← Dashboard</a>
 </header>
+<?php require_once 'navbar.php'; ?>
 
 <?php if ($mensaje): ?>
 <div class="alert alert-success">✅ <?php echo htmlspecialchars($mensaje); ?></div>
@@ -302,7 +322,7 @@ endif; ?>
 </div>
 
 <!-- ─── Paneles de acción ─────────────────────────────────────────── -->
-<?php if (!empty($dias)): ?>
+<?php if (!empty($dias) && can_delete_days()): ?>
 <div class="actions-grid">
 
   <!-- Eliminar días seleccionados -->
