@@ -25,6 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $can_view = isset($_POST['can_view_days']) ? 1 : 0;
         $can_delete = isset($_POST['can_delete_days']) ? 1 : 0;
+        $can_delete_admin = isset($_POST['can_delete_admin_data']) ? 1 : 0;
 
         if (empty($username) || empty($password)) {
             $err = "Username and password are required for new users.";
@@ -35,10 +36,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $rests_json = json_encode($allowed_rests, JSON_UNESCAPED_UNICODE);
 
             try {
-                $stmt = $pdo->prepare("INSERT INTO dashboard_users (username, password_hash, role, allowed_restaurants, can_view_days, can_delete_days) VALUES (:u, :p, :r, :a, :cv, :cd)");
+                $stmt = $pdo->prepare("INSERT INTO dashboard_users (username, password_hash, role, allowed_restaurants, can_view_days, can_delete_days, can_delete_admin_data) VALUES (:u, :p, :r, :a, :cv, :cd, :cda)");
                 $stmt->execute([
                     ':u' => $username, ':p' => $hash, ':r' => $role,
-                    ':a' => $rests_json, ':cv' => $can_view, ':cd' => $can_delete
+                    ':a' => $rests_json, ':cv' => $can_view, ':cd' => $can_delete, ':cda' => $can_delete_admin
                 ]);
                 $msg = "User '$username' created successfully.";
             }
@@ -50,6 +51,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $err = "Database error: " . $e->getMessage();
                 }
             }
+        }
+    }
+    elseif ($action === 'update') {
+        $edit_id = (int)($_POST['user_id'] ?? 0);
+        $role = $_POST['role'] ?? 'manager';
+        $allowed_rests = $_POST['allowed_restaurants'] ?? [];
+        if ($role === 'owner') {
+            $allowed_rests = ["ALL"];
+        }
+        $can_view = isset($_POST['can_view_days']) ? 1 : 0;
+        $can_delete = isset($_POST['can_delete_days']) ? 1 : 0;
+        $can_delete_admin = isset($_POST['can_delete_admin_data']) ? 1 : 0;
+
+        $rests_json = json_encode($allowed_rests, JSON_UNESCAPED_UNICODE);
+
+        // Ensure we don't accidentally downgrade the only owner
+        if ($edit_id == $_SESSION['gi_user_id'] && $role !== 'owner') {
+            $err = "You cannot downgrade your own role.";
+        }
+        elseif ($edit_id > 0) {
+            $update_password = trim($_POST['password'] ?? '');
+
+            if (!empty($update_password)) {
+                $hash = password_hash($update_password, PASSWORD_DEFAULT);
+                $stmt = $pdo->prepare("UPDATE dashboard_users SET password_hash = :p, role = :r, allowed_restaurants = :a, can_view_days = :cv, can_delete_days = :cd, can_delete_admin_data = :cda WHERE id = :id");
+                $stmt->execute([':p' => $hash, ':r' => $role, ':a' => $rests_json, ':cv' => $can_view, ':cd' => $can_delete, ':cda' => $can_delete_admin, ':id' => $edit_id]);
+            }
+            else {
+                $stmt = $pdo->prepare("UPDATE dashboard_users SET role = :r, allowed_restaurants = :a, can_view_days = :cv, can_delete_days = :cd, can_delete_admin_data = :cda WHERE id = :id");
+                $stmt->execute([':r' => $role, ':a' => $rests_json, ':cv' => $can_view, ':cd' => $can_delete, ':cda' => $can_delete_admin, ':id' => $edit_id]);
+            }
+            $msg = "User privileges updated successfully.";
         }
     }
     elseif ($action === 'delete') {
@@ -68,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // ── Fetch Data ────────────────────────────────────────────────────────────
 // Fetch all users
-$users = $pdo->query("SELECT id, username, role, allowed_restaurants, can_view_days, can_delete_days, created_at FROM dashboard_users ORDER BY role ASC, username ASC")->fetchAll();
+$users = $pdo->query("SELECT id, username, role, allowed_restaurants, can_view_days, can_delete_days, can_delete_admin_data, created_at FROM dashboard_users ORDER BY role ASC, username ASC")->fetchAll();
 
 // Fetch all distinct restaurants for the checkbox list
 $stmt_all = $pdo->query("SELECT DISTINCT restaurante FROM restaurantes_diario_media ORDER BY restaurante ASC");
@@ -194,22 +227,32 @@ endif; ?>
     else: ?> <span class="text-slate-600">✖ View Days</span> <?php
     endif; ?>
                         </div>
+                        </div>
                         <div class="flex items-center gap-2">
                             <?php if ($u['can_delete_days']): ?> <span class="text-emerald-400">✔ Delete Syncs</span>
                             <?php
     else: ?> <span class="text-slate-600">✖ Delete Syncs</span> <?php
     endif; ?>
                         </div>
+                        <div class="flex items-center gap-2">
+                            <?php if ($u['can_delete_admin_data']): ?> <span class="text-amber-400">✔ Full Facturación Wipe</span>
+                            <?php
+    else: ?> <span class="text-slate-600">✖ Full Facturación Wipe</span> <?php
+    endif; ?>
+                        </div>
                     </td>
                     <td class="p-4 align-top text-xs text-slate-300 max-w-sm leading-relaxed">
                         <?php echo $rests_disp; ?>
                     </td>
-                    <td class="p-4 align-top text-right">
-                        <form method="POST" onsubmit="return confirm('Are you sure you want to completely delete user \'<?php echo htmlspecialchars($u['username']); ?>\'?');">
+                    <td class="p-4 align-top text-right space-y-2">
+                        <button onclick="openEditModal(<?php echo htmlspecialchars(json_encode($u)); ?>)" class="text-blue-400 hover:text-blue-300 transition-colors p-2" title="Edit User">
+                            <svg class="w-5 h-5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                        </button>
+                        <form method="POST" class="inline-block" onsubmit="return confirm('Are you sure you want to completely delete user \'<?php echo htmlspecialchars($u['username']); ?>\'?');">
                             <input type="hidden" name="action" value="delete">
                             <input type="hidden" name="user_id" value="<?php echo $u['id']; ?>">
                             <button type="submit" class="text-slate-400 hover:text-red-400 transition-colors p-2" title="Delete User">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                <svg class="w-5 h-5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                             </button>
                         </form>
                     </td>
@@ -265,6 +308,10 @@ endforeach; ?>
                             <input type="checkbox" name="can_delete_days" value="1" class="w-4 h-4 rounded bg-slate-700 border-slate-600 text-blue-500 focus:ring-blue-500">
                             <span class="text-sm">Delete Sync Logs (Agents Area)</span>
                         </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" name="can_delete_admin_data" value="1" class="w-4 h-4 rounded bg-slate-700 border-slate-600 text-amber-500 focus:ring-amber-500">
+                            <span class="text-sm text-amber-200">Facturación Wipe (Admin Días)</span>
+                        </label>
                     </div>
                 </div>
 
@@ -293,18 +340,130 @@ endforeach; ?>
 </div>
 
 <script>
-// Hide the restaurant list if 'owner' is selected since owner gets ALL implicitly
+<!-- Modal Edit User -->
+<div id="editUserModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);">
+    <div class="glass-panel w-full max-w-2xl bg-slate-900 border-slate-600 shadow-2xl relative flex flex-col max-h-[90vh]">
+        <div class="p-6 border-b border-slate-700 flex justify-between items-center shrink-0">
+            <h2 class="text-xl font-bold">Edit User Details</h2>
+            <button onclick="document.getElementById('editUserModal').classList.add('hidden')" class="text-slate-400 hover:text-white">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        
+        <div class="p-6 overflow-y-auto custom-scrollbar">
+            <form id="editUserForm" method="POST" class="space-y-5">
+                <input type="hidden" name="action" value="update">
+                <input type="hidden" name="user_id" id="editUserId" value="">
+                
+                <div class="grid grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Username</label>
+                        <input type="text" id="editUsername" disabled class="form-input opacity-50 cursor-not-allowed">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">New Password (Optional)</label>
+                        <input type="password" name="password" class="form-input" placeholder="Leave blank to keep current">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Role Type</label>
+                    <select name="role" id="editRoleSelector" class="form-input" onchange="toggleEditRestList()">
+                        <option value="manager">Manager (Restricted Access)</option>
+                        <option value="owner">Owner (Full System Access)</option>
+                    </select>
+                </div>
+
+                <div class="p-4 rounded-lg bg-slate-800/50 border border-slate-700">
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Feature Permissions</label>
+                    <div class="flex gap-6">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="editCanView" name="can_view_days" value="1" class="w-4 h-4 rounded bg-slate-700 border-slate-600 text-blue-500 focus:ring-blue-500">
+                            <span class="text-sm">View Days (Daily Report)</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="editCanDelete" name="can_delete_days" value="1" class="w-4 h-4 rounded bg-slate-700 border-slate-600 text-blue-500 focus:ring-blue-500">
+                            <span class="text-sm">Delete Sync Logs</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="editCanDeleteAdmin" name="can_delete_admin_data" value="1" class="w-4 h-4 rounded bg-slate-700 border-slate-600 text-amber-500 focus:ring-amber-500">
+                            <span class="text-sm text-amber-200">Facturación Wipe</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div id="editRestaurantSelectorGroup">
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Allowed Restaurants</label>
+                    <div class="checkbox-grid max-h-48 overflow-y-auto p-4 border border-slate-700 rounded-lg custom-scrollbar bg-slate-900/50" id="editCheckboxes">
+                        <?php foreach ($all_db_restaurants as $r): ?>
+                        <label class="flex items-start gap-2 cursor-pointer hover:bg-slate-800/50 p-1.5 rounded transition-colors">
+                            <input type="checkbox" name="allowed_restaurants[]" value="<?php echo htmlspecialchars($r); ?>" class="w-4 h-4 mt-0.5 rounded bg-slate-700 border-slate-600 text-blue-500 focus:ring-blue-500" data-rest="<?php echo htmlspecialchars($r); ?>">
+                            <span class="text-sm text-slate-300 leading-tight"><?php echo htmlspecialchars($r); ?></span>
+                        </label>
+                        <?php
+endforeach; ?>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <div class="p-6 border-t border-slate-700 bg-slate-800/50 rounded-b-2xl flex justify-end gap-3 shrink-0">
+            <button onclick="document.getElementById('editUserModal').classList.add('hidden')" class="px-5 py-2 rounded-lg font-semibold text-sm text-slate-300 hover:bg-slate-700 transition-colors">Cancel</button>
+            <button type="submit" form="editUserForm" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-lg font-semibold text-sm transition-colors shadow-lg">Save Changes</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Create Form
 function toggleRestList() {
     const role = document.getElementById('roleSelector').value;
     const restGroup = document.getElementById('restaurantSelectorGroup');
     if (role === 'owner') {
         restGroup.style.display = 'none';
-        // Uncheck all so we don't send garbage
         const boxes = restGroup.querySelectorAll('input[type="checkbox"]');
         boxes.forEach(b => b.checked = false);
     } else {
         restGroup.style.display = 'block';
     }
+}
+
+// Edit Form
+function toggleEditRestList() {
+    const role = document.getElementById('editRoleSelector').value;
+    const restGroup = document.getElementById('editRestaurantSelectorGroup');
+    if (role === 'owner') {
+        restGroup.style.display = 'none';
+        const boxes = restGroup.querySelectorAll('input[type="checkbox"]');
+        boxes.forEach(b => b.checked = false);
+    } else {
+        restGroup.style.display = 'block';
+    }
+}
+
+function openEditModal(userData) {
+    document.getElementById('editUserId').value = userData.id;
+    document.getElementById('editUsername').value = userData.username;
+    
+    const roleSelect = document.getElementById('editRoleSelector');
+    roleSelect.value = userData.role;
+    
+    document.getElementById('editCanView').checked = parseInt(userData.can_view_days) === 1;
+    document.getElementById('editCanDelete').checked = parseInt(userData.can_delete_days) === 1;
+    document.getElementById('editCanDeleteAdmin').checked = parseInt(userData.can_delete_admin_data) === 1;
+
+    let restsArr = [];
+    try {
+        restsArr = JSON.parse(userData.allowed_restaurants) || [];
+    } catch(e) {}
+
+    const boxes = document.getElementById('editCheckboxes').querySelectorAll('input[type="checkbox"]');
+    boxes.forEach(b => {
+        b.checked = restsArr.includes(b.value) || restsArr.includes("ALL");
+    });
+    
+    toggleEditRestList();
+    document.getElementById('editUserModal').classList.remove('hidden');
 }
 </script>
 

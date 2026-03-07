@@ -7,7 +7,7 @@ $mensaje = '';
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  if (!can_delete_days()) {
+  if (!can_delete_admin_data()) {
     $error = 'No tiene permisos para eliminar registros.';
   }
   else {
@@ -322,7 +322,7 @@ endif; ?>
 </div>
 
 <!-- ─── Paneles de acción ─────────────────────────────────────────── -->
-<?php if (!empty($dias) && can_delete_days()): ?>
+<?php if (!empty($dias) && can_delete_admin_data()): ?>
 <div class="actions-grid">
 
   <!-- Eliminar días seleccionados -->

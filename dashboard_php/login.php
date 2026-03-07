@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $user = trim($_POST['username'] ?? '');
   $pass = trim($_POST['password'] ?? '');
 
-  $stmt = $pdo->prepare("SELECT id, username, password_hash, role, allowed_restaurants, can_view_days, can_delete_days FROM dashboard_users WHERE username = :u LIMIT 1");
+  $stmt = $pdo->prepare("SELECT id, username, password_hash, role, allowed_restaurants, can_view_days, can_delete_days, can_delete_admin_data FROM dashboard_users WHERE username = :u LIMIT 1");
   $stmt->execute([':u' => $user]);
   $db_user = $stmt->fetch();
 
@@ -20,6 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $_SESSION['gi_allowed'] = json_decode($db_user['allowed_restaurants'], true) ?? [];
     $_SESSION['gi_can_view'] = (bool)$db_user['can_view_days'];
     $_SESSION['gi_can_delete'] = (bool)$db_user['can_delete_days'];
+    $_SESSION['gi_can_delete_admin'] = (bool)$db_user['can_delete_admin_data'];
     $_SESSION['gi_time'] = date('Y-m-d H:i:s');
 
     // Usar solo el nombre base del archivo destino para evitar path duplicado
