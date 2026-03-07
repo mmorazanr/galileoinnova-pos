@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['id_sync'])) {
 $all_agents = $pdo->query("SELECT *, TIMESTAMPDIFF(MINUTE, last_heartbeat, NOW()) AS min_ago FROM sync_agents ORDER BY last_heartbeat DESC")->fetchAll();
 $agents = [];
 foreach ($all_agents as $ag) {
-    if (can_access_restaurant($ag['id_sync'])) {
+    if (can_access_restaurant($ag['restaurante'])) {
         $agents[] = $ag;
     }
 }
