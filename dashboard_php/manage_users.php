@@ -227,7 +227,6 @@ endif; ?>
     else: ?> <span class="text-slate-600">✖ View Days</span> <?php
     endif; ?>
                         </div>
-                        </div>
                         <div class="flex items-center gap-2">
                             <?php if ($u['can_delete_days']): ?> <span class="text-emerald-400">✔ Delete Syncs</span>
                             <?php
@@ -245,7 +244,7 @@ endif; ?>
                         <?php echo $rests_disp; ?>
                     </td>
                     <td class="p-4 align-top text-right space-y-2">
-                        <button onclick="openEditModal(<?php echo htmlspecialchars(json_encode($u)); ?>)" class="text-blue-400 hover:text-blue-300 transition-colors p-2" title="Edit User">
+                        <button onclick="openEditModal(this)" data-user="<?php echo htmlspecialchars(json_encode($u), ENT_QUOTES, 'UTF-8'); ?>" class="text-blue-400 hover:text-blue-300 transition-colors p-2" title="Edit User">
                             <svg class="w-5 h-5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
                         </button>
                         <form method="POST" class="inline-block" onsubmit="return confirm('Are you sure you want to completely delete user \'<?php echo htmlspecialchars($u['username']); ?>\'?');">
@@ -441,7 +440,16 @@ function toggleEditRestList() {
     }
 }
 
-function openEditModal(userData) {
+function openEditModal(btn) {
+    let userData = null;
+    try {
+        userData = JSON.parse(btn.getAttribute('data-user'));
+    } catch (e) {
+        console.error("Error parsing user JSON", e);
+        alert("Ocurrió un error leyendo los datos del usuario. Revise la consola.");
+        return;
+    }
+
     document.getElementById('editUserId').value = userData.id;
     document.getElementById('editUsername').value = userData.username;
     
