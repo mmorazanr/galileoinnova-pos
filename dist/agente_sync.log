@@ -1,3 +1,5 @@
 2026-03-01 20:29:59,048 - INFO - >>> Iniciando Agente DB Sync de Cuadre Exacto <<<
 2026-03-01 20:30:16,445 - INFO - >>> Iniciando Agente DB Sync de Cuadre Exacto <<<
 2026-03-01 20:31:20,649 - INFO - >>> Iniciando Agente DB Sync de Cuadre Exacto <<<
+2026-03-10 18:05:16,620 - ERROR - ❌ Error de integración: [Errno 2] No such file or directory: 'C:\\ICOM\\Database\\dist\\config.json'
+2026-03-10 18:05:16,620 - ERROR - \u274c Error de integraci�n: [Errno 2] No such file or directory: 'C:\\ICOM\\Database\\dist\\config.json'

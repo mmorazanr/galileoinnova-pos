@@ -5,5 +5,6 @@
     "remote_db_host": "hawk200.startdedicated.com",
     "remote_db_user": "recetas",
     "remote_db_pass": "gcode2025!",
-    "remote_db_name": "Recetas"
+    "remote_db_name": "Recetas",
+    "id_sync": "db3b924e511c198e"
 }

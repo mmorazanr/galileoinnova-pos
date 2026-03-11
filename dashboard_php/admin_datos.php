@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
       else {
         $tablas = ['restaurantes_ventas', 'restaurantes_kpi', 'restaurantes_kpi_mesero',
-          'restaurantes_mesero_media', 'restaurantes_diario_media'];
+          'restaurantes_mesero_media', 'restaurantes_diario_media', 'restaurantes_punches'];
         $total = 0;
         foreach ($tablas as $tabla) {
           $ph = implode(',', array_fill(0, count($fechas), '?'));
@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
       else {
         $tablas = ['restaurantes_ventas', 'restaurantes_kpi', 'restaurantes_kpi_mesero',
-          'restaurantes_mesero_media', 'restaurantes_diario_media'];
+          'restaurantes_mesero_media', 'restaurantes_diario_media', 'restaurantes_punches'];
         $total = 0;
         foreach ($tablas as $tabla) {
           $stmt = $pdo->prepare("DELETE FROM $tabla WHERE restaurante=?");

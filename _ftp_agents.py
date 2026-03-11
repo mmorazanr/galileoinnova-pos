@@ -10,9 +10,11 @@ files = {
     'auth.php': r'c:\ICOM\Database\dashboard_php\auth.php',
     'login.php': r'c:\ICOM\Database\dashboard_php\login.php',
     'reporte_diario.php': r'c:\ICOM\Database\dashboard_php\reporte_diario.php',
+    'reporte_mesero.php': r'c:\ICOM\Database\dashboard_php\reporte_mesero.php',
     'manage_users.php': r'c:\ICOM\Database\dashboard_php\manage_users.php',
     'index.php': r'c:\ICOM\Database\dashboard_php\index.php',
     'admin_datos.php': r'c:\ICOM\Database\dashboard_php\admin_datos.php',
+    'agente_sync_tray.exe': r'c:\ICOM\Database\dist\AgenteSyncTray.exe',
 }
 
 for remote_name, local_path in files.items():

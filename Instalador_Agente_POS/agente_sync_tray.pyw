@@ -534,6 +534,53 @@ class SyncWorker(QThread):
                     "info"
                 )
 
+                # ── Sincronizar Reloj Checador (ActivePunchInfo) ──
+                try:
+                    pos2100_path = os.path.join(os.path.dirname(cfg['local_db_path']), "POS2100.mdb")
+                    if os.path.exists(pos2100_path):
+                        self._log("⏱ Leyendo reloj checador en POS2100…", "info")
+                        punch_conn = pyodbc.connect(
+                            f"Driver={{Microsoft Access Driver (*.mdb, *.accdb)}};"
+                            f"DBQ={pos2100_path};PWD=C0mtrex;"
+                        )
+                        p_cur = punch_conn.cursor()
+                        p_cur.execute("SELECT PunchID, ComtrexEmpID, ClockStatus, JobDescription, ActStartTime, ActStopTime FROM ActivePunchInfo")
+                        punches = p_cur.fetchall()
+                        punch_conn.close()
+
+                        if punches:
+                            batch_p = []
+                            for r in punches:
+                                punch_id = r[0] or 0
+                                emp_id = r[1] or 0
+                                status = r[2] or 0
+                                job = r[3] or ''
+                                start_dt = r[4]
+                                stop_dt = r[5]
+                                
+                                if start_dt:
+                                    fecha_punch = start_dt.strftime('%Y-%m-%d')
+                                    mesero = cashier_map.get(str(emp_id), f"Emp {emp_id}")
+                                    batch_p.append((
+                                        rest, mesero, punch_id, emp_id, fecha_punch,
+                                        start_dt, stop_dt, job, status
+                                    ))
+                                
+                            if batch_p:
+                                push_cursor.executemany("""
+                                    INSERT INTO restaurantes_punches
+                                    (restaurante, mesero, punch_id, comtrex_empid, fecha, hora_entrada, hora_salida, cargo, clock_status)
+                                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                                    ON DUPLICATE KEY UPDATE
+                                        hora_salida=VALUES(hora_salida),
+                                        cargo=VALUES(cargo),
+                                        clock_status=VALUES(clock_status)
+                                """, batch_p)
+                                remote_conn.commit()
+                                self._log(f"  ✔ {len(batch_p)} registros de reloj checador sincronizados.", "info")
+                except Exception as e:
+                    self._log(f"  ❌ Error sync reloj checador: {e}", "warning")
+
                 ts_ok = datetime.datetime.now().strftime('%H:%M:%S')
                 self.status_signal.emit(f"✅ Sync OK {ts_ok} — próx. en {interval}s", ICON_GREEN)
 

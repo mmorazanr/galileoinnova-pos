@@ -390,3 +390,103 @@
 2026-03-02 10:56:45,342 - INFO - Conectando a la base de datos local�
 2026-03-02 10:56:45,551 - INFO - Conectando a MariaDB Cloud�
 2026-03-02 10:56:46,313 - INFO - Extrayendo �ltimos 50 d�as (SalesDay 6298�6348)�
+2026-03-10 00:39:36,690 - INFO - ────────────────────────────────────────────────
+2026-03-10 00:39:36,690 - INFO - \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+2026-03-10 00:39:36,691 - INFO - 🔄 Iniciando ciclo de sincronización — 10/03/2026 00:39:36
+2026-03-10 00:39:36,691 - INFO - \U0001f504 Iniciando ciclo de sincronizaci�n � 10/03/2026 00:39:36
+2026-03-10 00:39:36,691 - INFO - 🔌 Conectando a Access (POS local)…
+2026-03-10 00:39:36,691 - INFO - \U0001f50c Conectando a Access (POS local)�
+2026-03-10 00:39:37,151 - INFO - ✔ Access OK
+2026-03-10 00:39:37,151 - INFO - \u2714 Access OK
+2026-03-10 00:39:37,161 - INFO - 🔌 Conectando a MariaDB Cloud…
+2026-03-10 00:39:37,161 - INFO - \U0001f50c Conectando a MariaDB Cloud�
+2026-03-10 00:39:38,369 - INFO - package: mysql.connector.plugins
+2026-03-10 00:39:38,369 - INFO - plugin_name: mysql_native_password
+2026-03-10 00:39:38,369 - INFO - package: mysql.connector.plugins
+2026-03-10 00:39:38,370 - INFO - plugin_name: mysql_native_password
+2026-03-10 00:39:38,370 - INFO - AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin
+2026-03-10 00:39:38,371 - INFO - AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin
+2026-03-10 00:39:38,676 - INFO - ✔ MariaDB OK
+2026-03-10 00:39:38,676 - INFO - \u2714 MariaDB OK
+2026-03-10 00:39:39,352 - INFO - 📋 36 días encontrados en Access (SalesDay 6298–6348)
+2026-03-10 00:39:39,352 - INFO - \U0001f4cb 36 d�as encontrados en Access (SalesDay 6298�6348)
+2026-03-10 00:39:39,481 - INFO -   ✔ [01/36] 2026-01-19 Lunes — Ya sincronizado | Net Sales: $3,942.95 | 298 items
+2026-03-10 00:39:39,481 - INFO -   \u2714 [01/36] 2026-01-19 Lunes � Ya sincronizado | Net Sales: $3,942.95 | 298 items
+2026-03-10 00:39:39,489 - INFO -   ✔ [02/36] 2026-01-20 Martes — Ya sincronizado | Net Sales: $2,217.09 | 230 items
+2026-03-10 00:39:39,489 - INFO -   \u2714 [02/36] 2026-01-20 Martes � Ya sincronizado | Net Sales: $2,217.09 | 230 items
+2026-03-10 00:39:39,492 - INFO -   ✔ [03/36] 2026-01-21 Miércoles — Ya sincronizado | Net Sales: $2,946.42 | 238 items
+2026-03-10 00:39:39,492 - INFO -   \u2714 [03/36] 2026-01-21 Mi�rcoles � Ya sincronizado | Net Sales: $2,946.42 | 238 items
+2026-03-10 00:39:39,504 - INFO -   ✔ [04/36] 2026-01-22 Jueves — Ya sincronizado | Net Sales: $3,637.51 | 319 items
+2026-03-10 00:39:39,504 - INFO -   \u2714 [04/36] 2026-01-22 Jueves � Ya sincronizado | Net Sales: $3,637.51 | 319 items
+2026-03-10 00:39:39,513 - INFO -   ✔ [05/36] 2026-01-23 Viernes — Ya sincronizado | Net Sales: $6,798.39 | 543 items
+2026-03-10 00:39:39,513 - INFO -   \u2714 [05/36] 2026-01-23 Viernes � Ya sincronizado | Net Sales: $6,798.39 | 543 items
+2026-03-10 00:39:39,525 - INFO -   ✔ [06/36] 2026-01-24 Sábado — Ya sincronizado | Net Sales: $4,863.67 | 434 items
+2026-03-10 00:39:39,525 - INFO -   \u2714 [06/36] 2026-01-24 S�bado � Ya sincronizado | Net Sales: $4,863.67 | 434 items
+2026-03-10 00:39:39,532 - INFO -   ✔ [07/36] 2026-01-25 Domingo — Ya sincronizado | Net Sales: $3,046.97 | 268 items
+2026-03-10 00:39:39,532 - INFO -   \u2714 [07/36] 2026-01-25 Domingo � Ya sincronizado | Net Sales: $3,046.97 | 268 items
+2026-03-10 00:39:39,539 - INFO -   ✔ [08/36] 2026-01-26 Lunes — Ya sincronizado | Net Sales: $2,686.21 | 249 items
+2026-03-10 00:39:39,539 - INFO -   \u2714 [08/36] 2026-01-26 Lunes � Ya sincronizado | Net Sales: $2,686.21 | 249 items
+2026-03-10 00:39:39,548 - INFO -   ✔ [09/36] 2026-01-27 Martes — Ya sincronizado | Net Sales: $2,937.20 | 253 items
+2026-03-10 00:39:39,548 - INFO -   \u2714 [09/36] 2026-01-27 Martes � Ya sincronizado | Net Sales: $2,937.20 | 253 items
+2026-03-10 00:39:39,554 - INFO -   ✔ [10/36] 2026-01-28 Miércoles — Ya sincronizado | Net Sales: $3,890.11 | 312 items
+2026-03-10 00:39:39,554 - INFO -   \u2714 [10/36] 2026-01-28 Mi�rcoles � Ya sincronizado | Net Sales: $3,890.11 | 312 items
+2026-03-10 00:39:39,563 - INFO -   ✔ [11/36] 2026-01-29 Jueves — Ya sincronizado | Net Sales: $4,264.41 | 358 items
+2026-03-10 00:39:39,563 - INFO -   \u2714 [11/36] 2026-01-29 Jueves � Ya sincronizado | Net Sales: $4,264.41 | 358 items
+2026-03-10 00:39:39,575 - INFO -   ✔ [12/36] 2026-01-30 Viernes — Ya sincronizado | Net Sales: $7,842.78 | 609 items
+2026-03-10 00:39:39,575 - INFO -   \u2714 [12/36] 2026-01-30 Viernes � Ya sincronizado | Net Sales: $7,842.78 | 609 items
+2026-03-10 00:39:39,583 - INFO -   ✔ [13/36] 2026-01-31 Sábado — Ya sincronizado | Net Sales: $4,944.05 | 421 items
+2026-03-10 00:39:39,583 - INFO -   \u2714 [13/36] 2026-01-31 S�bado � Ya sincronizado | Net Sales: $4,944.05 | 421 items
+2026-03-10 00:39:39,591 - INFO -   ✔ [14/36] 2026-02-01 Domingo — Ya sincronizado | Net Sales: $6,060.62 | 456 items
+2026-03-10 00:39:39,591 - INFO -   \u2714 [14/36] 2026-02-01 Domingo � Ya sincronizado | Net Sales: $6,060.62 | 456 items
+2026-03-10 00:39:39,599 - INFO -   ✔ [15/36] 2026-02-02 Lunes — Ya sincronizado | Net Sales: $2,682.78 | 233 items
+2026-03-10 00:39:39,599 - INFO -   \u2714 [15/36] 2026-02-02 Lunes � Ya sincronizado | Net Sales: $2,682.78 | 233 items
+2026-03-10 00:39:39,606 - INFO -   ✔ [16/36] 2026-02-03 Martes — Ya sincronizado | Net Sales: $2,970.11 | 276 items
+2026-03-10 00:39:39,606 - INFO -   \u2714 [16/36] 2026-02-03 Martes � Ya sincronizado | Net Sales: $2,970.11 | 276 items
+2026-03-10 00:39:39,610 - INFO -   ✔ [17/36] 2026-02-04 Miércoles — Ya sincronizado | Net Sales: $3,673.07 | 294 items
+2026-03-10 00:39:39,610 - INFO -   \u2714 [17/36] 2026-02-04 Mi�rcoles � Ya sincronizado | Net Sales: $3,673.07 | 294 items
+2026-03-10 00:39:39,622 - INFO -   ✔ [18/36] 2026-02-05 Jueves — Ya sincronizado | Net Sales: $3,561.40 | 287 items
+2026-03-10 00:39:39,622 - INFO -   \u2714 [18/36] 2026-02-05 Jueves � Ya sincronizado | Net Sales: $3,561.40 | 287 items
+2026-03-10 00:39:39,631 - INFO -   ✔ [19/36] 2026-02-06 Viernes — Ya sincronizado | Net Sales: $8,231.82 | 591 items
+2026-03-10 00:39:39,631 - INFO -   \u2714 [19/36] 2026-02-06 Viernes � Ya sincronizado | Net Sales: $8,231.82 | 591 items
+2026-03-10 00:39:39,634 - INFO -   ✔ [20/36] 2026-02-07 Sábado — Ya sincronizado | Net Sales: $7,439.02 | 563 items
+2026-03-10 00:39:39,634 - INFO -   \u2714 [20/36] 2026-02-07 S�bado � Ya sincronizado | Net Sales: $7,439.02 | 563 items
+2026-03-10 00:39:39,649 - INFO -   ✔ [21/36] 2026-02-08 Domingo — Ya sincronizado | Net Sales: $5,547.18 | 460 items
+2026-03-10 00:39:39,649 - INFO -   \u2714 [21/36] 2026-02-08 Domingo � Ya sincronizado | Net Sales: $5,547.18 | 460 items
+2026-03-10 00:39:39,652 - INFO -   ✔ [22/36] 2026-02-09 Lunes — Ya sincronizado | Net Sales: $3,309.87 | 285 items
+2026-03-10 00:39:39,652 - INFO -   \u2714 [22/36] 2026-02-09 Lunes � Ya sincronizado | Net Sales: $3,309.87 | 285 items
+2026-03-10 00:39:39,664 - INFO -   ✔ [23/36] 2026-02-10 Martes — Ya sincronizado | Net Sales: $3,015.82 | 282 items
+2026-03-10 00:39:39,664 - INFO -   \u2714 [23/36] 2026-02-10 Martes � Ya sincronizado | Net Sales: $3,015.82 | 282 items
+2026-03-10 00:39:39,668 - INFO -   ✔ [24/36] 2026-02-11 Miércoles — Ya sincronizado | Net Sales: $2,827.09 | 280 items
+2026-03-10 00:39:39,668 - INFO -   \u2714 [24/36] 2026-02-11 Mi�rcoles � Ya sincronizado | Net Sales: $2,827.09 | 280 items
+2026-03-10 00:39:39,678 - INFO -   ✔ [25/36] 2026-02-12 Jueves — Ya sincronizado | Net Sales: $3,129.53 | 273 items
+2026-03-10 00:39:39,678 - INFO -   \u2714 [25/36] 2026-02-12 Jueves � Ya sincronizado | Net Sales: $3,129.53 | 273 items
+2026-03-10 00:39:39,682 - INFO -   ✔ [26/36] 2026-02-13 Viernes — Ya sincronizado | Net Sales: $9,133.51 | 645 items
+2026-03-10 00:39:39,682 - INFO -   \u2714 [26/36] 2026-02-13 Viernes � Ya sincronizado | Net Sales: $9,133.51 | 645 items
+2026-03-10 00:39:39,691 - INFO -   ✔ [27/36] 2026-02-14 Sábado — Ya sincronizado | Net Sales: $8,505.27 | 645 items
+2026-03-10 00:39:39,691 - INFO -   \u2714 [27/36] 2026-02-14 S�bado � Ya sincronizado | Net Sales: $8,505.27 | 645 items
+2026-03-10 00:39:39,699 - INFO -   ✔ [28/36] 2026-02-15 Domingo — Ya sincronizado | Net Sales: $6,534.35 | 460 items
+2026-03-10 00:39:39,699 - INFO -   \u2714 [28/36] 2026-02-15 Domingo � Ya sincronizado | Net Sales: $6,534.35 | 460 items
+2026-03-10 00:39:39,703 - INFO -   ✔ [29/36] 2026-02-16 Lunes — Ya sincronizado | Net Sales: $3,312.83 | 287 items
+2026-03-10 00:39:39,703 - INFO -   \u2714 [29/36] 2026-02-16 Lunes � Ya sincronizado | Net Sales: $3,312.83 | 287 items
+2026-03-10 00:39:39,713 - INFO -   ✔ [30/36] 2026-02-17 Martes — Ya sincronizado | Net Sales: $4,536.83 | 319 items
+2026-03-10 00:39:39,713 - INFO -   \u2714 [30/36] 2026-02-17 Martes � Ya sincronizado | Net Sales: $4,536.83 | 319 items
+2026-03-10 00:39:39,720 - INFO -   ✔ [31/36] 2026-02-18 Miércoles — Ya sincronizado | Net Sales: $2,983.24 | 246 items
+2026-03-10 00:39:39,720 - INFO -   \u2714 [31/36] 2026-02-18 Mi�rcoles � Ya sincronizado | Net Sales: $2,983.24 | 246 items
+2026-03-10 00:39:39,725 - INFO -   ✔ [32/36] 2026-02-19 Jueves — Ya sincronizado | Net Sales: $4,701.04 | 368 items
+2026-03-10 00:39:39,725 - INFO -   \u2714 [32/36] 2026-02-19 Jueves � Ya sincronizado | Net Sales: $4,701.04 | 368 items
+2026-03-10 00:39:39,735 - INFO -   ✔ [33/36] 2026-02-20 Viernes — Ya sincronizado | Net Sales: $6,959.08 | 543 items
+2026-03-10 00:39:39,735 - INFO -   \u2714 [33/36] 2026-02-20 Viernes � Ya sincronizado | Net Sales: $6,959.08 | 543 items
+2026-03-10 00:39:39,740 - INFO -   ✔ [34/36] 2026-02-21 Sábado — Ya sincronizado | Net Sales: $9,629.96 | 644 items
+2026-03-10 00:39:39,740 - INFO -   \u2714 [34/36] 2026-02-21 S�bado � Ya sincronizado | Net Sales: $9,629.96 | 644 items
+2026-03-10 00:39:39,751 - INFO -   ✔ [35/36] 2026-02-22 Domingo — Ya sincronizado | Net Sales: $6,738.83 | 481 items
+2026-03-10 00:39:39,751 - INFO -   \u2714 [35/36] 2026-02-22 Domingo � Ya sincronizado | Net Sales: $6,738.83 | 481 items
+2026-03-10 00:39:39,760 - INFO -   ✔ [36/36] 2026-02-23 Lunes — Ya sincronizado | Net Sales: $3,160.56 | 278 items
+2026-03-10 00:39:39,760 - INFO -   \u2714 [36/36] 2026-02-23 Lunes � Ya sincronizado | Net Sales: $3,160.56 | 278 items
+2026-03-10 00:39:39,760 - INFO - ────────────────────────────────────────────────
+2026-03-10 00:39:39,760 - INFO - \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+2026-03-10 00:39:39,760 - INFO - ✅ Ciclo completo | 36 días revisados: 36 ya sincronizados, 0 nuevos, 0 actualizados | 0 filas subidas
+2026-03-10 00:39:39,760 - INFO - \u2705 Ciclo completo | 36 d�as revisados: 36 ya sincronizados, 0 nuevos, 0 actualizados | 0 filas subidas
+2026-03-10 00:39:39,760 - INFO - ⏱ Leyendo reloj checador en POS2100…
+2026-03-10 00:39:39,760 - INFO - \u23f1 Leyendo reloj checador en POS2100�
+2026-03-10 00:39:39,874 - INFO - ⏱  Próxima sincronización en 300s…
+2026-03-10 00:39:39,874 - INFO - \u23f1  Pr�xima sincronizaci�n en 300s�

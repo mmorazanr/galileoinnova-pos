@@ -15,17 +15,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['id_sync'])) {
 
         if (!empty($_POST['command'])) {
             $cmd = $_POST['command'];
-            $allowed = ['clear_logs', 'pause', 'resume', 'sync_now'];
+            $allowed = ['clear_logs', 'pause', 'resume', 'sync_now', 'get_config', 'set_config'];
             if (in_array($cmd, $allowed)) {
                 $stmt = $pdo->prepare("UPDATE sync_agents SET pending_command = :cmd WHERE id_sync = :id");
                 $stmt->execute([':cmd' => $cmd, ':id' => $id]);
                 $msg = "Command '$cmd' queued for agent: " . htmlspecialchars($id);
             }
         }
-        elseif (!empty($_POST['action']) && $_POST['action'] === 'clear_dashboard_logs') {
-            $stmt = $pdo->prepare("DELETE FROM agent_sync_history WHERE id_sync = :id");
-            $stmt->execute([':id' => $id]);
-            $msg = "Dashboard sync history deleted for agent: " . htmlspecialchars($id);
+        elseif (!empty($_POST['action'])) {
+            if ($_POST['action'] === 'clear_dashboard_logs') {
+                $stmt = $pdo->prepare("DELETE FROM agent_sync_history WHERE id_sync = :id");
+                $stmt->execute([':id' => $id]);
+                $msg = "Dashboard sync history deleted for agent: " . htmlspecialchars($id);
+            }
+            elseif ($_POST['action'] === 'delete_agent') {
+                $stmt1 = $pdo->prepare("DELETE FROM agent_sync_history WHERE id_sync = :id");
+                $stmt1->execute([':id' => $id]);
+
+                $stmt2 = $pdo->prepare("DELETE FROM sync_agents WHERE id_sync = :id");
+                $stmt2->execute([':id' => $id]);
+
+                $msg = "Agente eliminado del dashboard exitosamente: " . htmlspecialchars($id);
+            }
+            elseif ($_POST['action'] === 'save_config' && isset($_POST['config_json'])) {
+                $config_json = $_POST['config_json'];
+                // Validate JSON
+                json_decode($config_json);
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    // Guardar el JSON en la DB Y enviar el comando set_config para que el agente lo escriba
+                    $stmt = $pdo->prepare("UPDATE sync_agents SET config_json = :cfg, pending_command = 'set_config' WHERE id_sync = :id");
+                    $stmt->execute([':cfg' => $config_json, ':id' => $id]);
+                    $msg = "Configuración guardada y enviada al agente: " . htmlspecialchars($id) . ". Se aplicará en el próximo heartbeat.";
+                }
+                else {
+                    $msg = "Error: El JSON proporcionado no es válido para el agente: " . htmlspecialchars($id);
+                }
+            }
         }
     }
 }
@@ -194,21 +219,34 @@ else: ?>
 
             <!-- Command Bar -->
             <?php if (can_delete_days()): ?>
-            <form method="POST" class="flex items-center gap-3 mb-4 mt-4">
-                <input type="hidden" name="id_sync" value="<?php echo htmlspecialchars($ag['id_sync']); ?>">
-                <select name="command" class="flex-1 bg-slate-800 border border-slate-600 text-slate-200 text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
-                    <option value="">— Select Command —</option>
-                    <option value="sync_now">⚡ Force Sync Now</option>
-                    <option value="clear_logs">🗑  Clear Logs</option>
-                    <option value="pause">⏸  Pause Sync</option>
-                    <option value="resume">▶  Resume Sync</option>
-                </select>
-                <button type="submit"
-                    onclick="return this.form.command.value ? confirm('Send command to this agent?') : (alert('Select a command first.'), false)"
-                    class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold py-2 px-4 rounded-lg transition-colors whitespace-nowrap">
-                    Send Command
+            <div class="flex items-center gap-3 mb-4 mt-4">
+                <form method="POST" class="flex-1 flex items-center gap-3">
+                    <input type="hidden" name="id_sync" value="<?php echo htmlspecialchars($ag['id_sync']); ?>">
+                    <select name="command" class="flex-1 bg-slate-800 border border-slate-600 text-slate-200 text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+                        <option value="">— Select Command —</option>
+                        <option value="sync_now">⚡ Force Sync Now</option>
+                        <option value="clear_logs">🗑  Clear Logs</option>
+                        <option value="pause">⏸  Pause Sync</option>
+                        <option value="resume">▶  Resume Sync</option>
+                        <option value="get_config">📡 Fetch Latest Config from Agent</option>
+                    </select>
+                    <button type="submit"
+                        onclick="return this.form.command.value ? confirm('Send command to this agent?') : (alert('Select a command first.'), false)"
+                        class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold py-2 px-4 rounded-lg transition-colors whitespace-nowrap">
+                        Send Command
+                    </button>
+                </form>
+                <form method="POST" class="inline" onsubmit="return confirm('¿Seguro que deseas eliminar este Agente de la lista? Perderás todo el historial de Sync.');">
+                    <input type="hidden" name="id_sync" value="<?php echo htmlspecialchars($ag['id_sync']); ?>">
+                    <input type="hidden" name="action" value="delete_agent">
+                    <button type="submit" class="bg-red-900/40 hover:bg-red-700 text-red-100 text-xs font-semibold py-2 px-3 rounded-lg border border-red-700/50 transition-colors" title="Eliminar Agente">
+                        ✕ Eliminar Agente
+                    </button>
+                </form>
+                <button type="button" onclick="openConfigModal('<?php echo htmlspecialchars($ag['id_sync']); ?>', <?php echo htmlspecialchars(json_encode($ag['config_json'] ?? '')); ?>)" class="bg-slate-700 hover:bg-slate-600 text-white text-xs font-semibold py-2 px-3 rounded-lg transition-colors border border-slate-600" title="Editar Configuración Remota">
+                    🛠️ Config JSON
                 </button>
-            </form>
+            </div>
             <?php
         endif; ?>
 
@@ -263,7 +301,55 @@ endif; ?>
 
 </div>
 
+<!-- Config Modal -->
+<div id="configModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div class="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl w-11/12 max-w-2xl overflow-hidden relative">
+        <div class="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
+            <h3 class="text-white font-bold text-lg">🛠️ Remote Config</h3>
+            <button type="button" onclick="closeConfigModal()" class="text-slate-400 hover:text-white transition-colors text-xl font-bold px-2">&times;</button>
+        </div>
+        <form method="POST" class="p-5" onsubmit="return confirm('¿Seguro que deseas sobrescribir la configuración remota de este Agente?');">
+            <input type="hidden" name="action" value="save_config">
+            <input type="hidden" name="id_sync" id="config_id_sync" value="">
+            <div class="mb-4">
+                <label class="block text-slate-400 text-xs font-bold mb-2 uppercase tracking-wider">Config JSON Payload</label>
+                <textarea name="config_json" id="config_json_field" rows="12" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-sm font-mono text-slate-300 focus:outline-none focus:border-blue-500 custom-scrollbar" spellcheck="false"></textarea>
+                <p class="text-xs text-slate-500 mt-2">Este JSON se transmitirá al Agente local en su siguiente latido (cada 60s) y se sobreescribirá en el local.</p>
+            </div>
+            <div class="flex justify-end gap-3 mt-6">
+                <button type="button" onclick="closeConfigModal()" class="bg-slate-800 hover:bg-slate-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors border border-slate-700">Cancel</button>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold py-2 px-6 rounded-lg transition-colors shadow-lg shadow-blue-600/20">💾 Save Configuration</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
+function openConfigModal(idSync, rawJson) {
+    document.getElementById('config_id_sync').value = idSync;
+    
+    let displayJson = rawJson;
+    try {
+        if(rawJson) {
+            displayJson = JSON.stringify(JSON.parse(rawJson), null, 4);
+        } else {
+            displayJson = "{\n    \n}";
+        }
+    } catch(e) { }
+    
+    document.getElementById('config_json_field').value = displayJson;
+    document.getElementById('configModal').classList.remove('hidden');
+}
+function closeConfigModal() {
+    document.getElementById('configModal').classList.add('hidden');
+}
+// Close on outside click
+document.getElementById('configModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeConfigModal();
+    }
+});
+
 setTimeout(function(){ location.reload(); }, 60000);
 </script>
 

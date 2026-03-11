@@ -42,6 +42,49 @@ $day_colors = array(
   'Domingo' => '#fca5a5'
 );
 
+// ── Exportación de Reloj Checador ──────────────────────────────────────────
+if (isset($_GET['export_reloj']) && $_GET['export_reloj'] == '1') {
+  $where_reloj = "fecha >= ? AND fecha <= ?";
+  $params_reloj = array($start_date, $end_date);
+  if ($restaurante !== '') {
+    $where_reloj .= " AND restaurante = ?";
+    $params_reloj[] = $restaurante;
+  }
+  if ($mesero !== '') {
+    $where_reloj .= " AND mesero = ?";
+    $params_reloj[] = $mesero;
+  }
+
+  $q = "SELECT fecha, restaurante, mesero, cargo, hora_entrada, hora_salida, clock_status FROM restaurantes_punches WHERE " . $where_reloj . " ORDER BY fecha DESC, restaurante ASC, mesero ASC, hora_entrada ASC";
+  $s = $pdo->prepare($q);
+  $s->execute($params_reloj);
+  $rows = $s->fetchAll(PDO::FETCH_ASSOC);
+
+  header('Content-Type: text/csv; charset=utf-8');
+  header('Content-Disposition: attachment; filename="Timeclock_Export_' . date('Ymd_His') . '.csv"');
+  echo "\xEF\xBB\xBF"; // UTF-8 BOM
+  $output = fopen('php://output', 'w');
+  fputcsv($output, ['Fecha', 'Sucursal', 'Mesero', 'Puesto', 'Entrada', 'Salida', 'Estado', 'Horas Estimadas']);
+  foreach ($rows as $row) {
+    $in = $row['hora_entrada'] ? date('h:i A', strtotime($row['hora_entrada'])) : '-';
+    $out = '-';
+    $horas_est = '0.00';
+    $is_1899 = (!empty($row['hora_salida']) && (strpos($row['hora_salida'], '1899-') !== false || strpos($row['hora_salida'], '1900-') !== false));
+    if (!empty($row['hora_salida']) && !$is_1899) {
+      $out = date('h:i A', strtotime($row['hora_salida']));
+      $t_in = strtotime($row['hora_entrada']);
+      $t_out = strtotime($row['hora_salida']);
+      if ($t_out !== false && $t_in !== false) {
+        $horas_est = number_format(($t_out - $t_in) / 3600, 2);
+      }
+    }
+    $est = ($row['clock_status'] == 1 || empty($row['hora_salida']) || $is_1899) ? 'Activo' : 'Cerrado';
+    fputcsv($output, [$row['fecha'], $row['restaurante'], $row['mesero'], $row['cargo'], $in, $out, $est, $horas_est]);
+  }
+  fclose($output);
+  exit;
+}
+
 // ── Ejecutar queries solo si hay mesero ──────────────────────────────────
 $data_ready = ($mesero !== '');
 $dias_rows = array();
@@ -128,8 +171,28 @@ if ($data_ready) {
     $tickets_dia[$k] = intval($row['tickets']);
   }
 
+  // 3d. Horas por día (excluyendo salidas nulas o de 1899)
+  $stmt3d = $pdo->prepare(
+    "SELECT fecha,
+            SUM(
+              CASE 
+                WHEN hora_salida IS NULL OR YEAR(hora_salida) < 1900 THEN 0
+                ELSE TIMESTAMPDIFF(MINUTE, hora_entrada, hora_salida)
+              END
+            ) / 60.0 AS horas
+     FROM restaurantes_punches
+     WHERE " . $where_base . "
+     GROUP BY fecha"
+  );
+  $stmt3d->execute($params_base);
+  $horas_dia = array();
+  foreach ($stmt3d->fetchAll() as $row) {
+    $k = ($row['fecha'] instanceof DateTime) ? $row['fecha']->format('Y-m-d') : (string)$row['fecha'];
+    $horas_dia[$k] = floatval($row['horas']);
+  }
+
   // 3c. Merge en PHP — ordenado por fecha DESC
-  $all_fechas = array_unique(array_merge(array_keys($ventas_dia), array_keys($tickets_dia)));
+  $all_fechas = array_unique(array_merge(array_keys($ventas_dia), array_keys($tickets_dia), array_keys($horas_dia)));
   rsort($all_fechas);
   $dias_rows = array();
   foreach ($all_fechas as $f) {
@@ -138,6 +201,7 @@ if ($data_ready) {
       'ventas' => isset($ventas_dia[$f]) ? $ventas_dia[$f]['ventas'] : 0,
       'items' => isset($ventas_dia[$f]) ? $ventas_dia[$f]['items'] : 0,
       'tickets' => isset($tickets_dia[$f]) ? $tickets_dia[$f] : 0,
+      'horas' => isset($horas_dia[$f]) ? $horas_dia[$f] : 0,
     );
   }
 
@@ -167,6 +231,17 @@ if ($data_ready) {
   );
   $stmt5->execute($params_base);
   $media_rows = $stmt5->fetchAll();
+
+  // 6. Turnos Activos (Punches)
+  $stmt6 = $pdo->prepare(
+    "SELECT fecha, hora_entrada, hora_salida, cargo, clock_status
+     FROM restaurantes_punches
+     WHERE " . $where_base . "
+     ORDER BY hora_entrada DESC
+     LIMIT 50"
+  );
+  $stmt6->execute($params_base);
+  $punches_rows = $stmt6->fetchAll();
 }
 ?>
 <!DOCTYPE html>
@@ -261,8 +336,8 @@ endforeach; ?>
       </select>
     </div>
     <div>
-      <div style="font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;">Mesero *</div>
-      <select name="mesero" id="sel_mesero" required>
+      <div style="font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;">Mesero</div>
+      <select name="mesero" id="sel_mesero">
         <option value="">-- Seleccione --</option>
         <?php foreach ($lista_meseros as $m): ?>
           <option value="<?php echo htmlspecialchars($m); ?>" <?php if ($m === $mesero)
@@ -281,7 +356,10 @@ endforeach; ?>
       <div style="font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;">Hasta</div>
       <input type="date" name="end_date" value="<?php echo htmlspecialchars($end_date); ?>">
     </div>
-    <button type="submit" class="btn btn-blue">📊 Generar</button>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:3px;">
+      <button type="submit" class="btn btn-blue" style="height:36px;">📊 Generar</button>
+      <button type="submit" name="export_reloj" value="1" class="btn btn-green" style="height:36px;" title="Exporta todas las entradas/salidas en base a los filtros">⏱️ Export Timeclock</button>
+    </div>
   </form>
 </div>
 
@@ -337,18 +415,22 @@ endforeach; ?>
     <table id="tblDias">
       <thead>
         <tr>
-          <th onclick="sortTbl('tblDias',0)" data-type="text">DÍA</th>
-          <th onclick="sortTbl('tblDias',1)" data-type="date">FECHA</th>
-          <th onclick="sortTbl('tblDias',2)" data-type="num" style="text-align:right;color:#60a5fa;">🎫 TICKETS</th>
-          <th onclick="sortTbl('tblDias',3)" data-type="num" style="text-align:right;">ITEMS</th>
-          <th onclick="sortTbl('tblDias',4)" data-type="num" style="text-align:right;color:#4ade80;">NET SALES</th>
-          <th onclick="sortTbl('tblDias',5)" data-type="num" style="text-align:right;color:#f472b6;">AVG/TICKET</th>
+          <th onclick="sortTbl('tblDias',0)" data-type="text">MESERO</th>
+          <th onclick="sortTbl('tblDias',1)" data-type="text">DÍA</th>
+          <th onclick="sortTbl('tblDias',2)" data-type="date">FECHA</th>
+          <th onclick="sortTbl('tblDias',3)" data-type="num" style="text-align:right;color:#60a5fa;">🎫 TICKETS</th>
+          <th onclick="sortTbl('tblDias',4)" data-type="num" style="text-align:right;">ITEMS</th>
+          <th onclick="sortTbl('tblDias',5)" data-type="num" style="text-align:right;color:#a78bfa;">HORAS</th>
+          <th onclick="sortTbl('tblDias',6)" data-type="num" style="text-align:right;color:#4ade80;">NET SALES</th>
+          <th onclick="sortTbl('tblDias',7)" data-type="num" style="text-align:right;color:#f472b6;">AVG/TICKET</th>
+          <th onclick="sortTbl('tblDias',8)" data-type="num" style="text-align:right;color:#34d399;">$/HORA</th>
         </tr>
       </thead>
       <tbody id="bodyDias">
         <?php
   $tot_t = 0;
   $tot_i = 0;
+  $tot_h = 0;
   $tot_v = 0;
   foreach ($dias_rows as $d):
     $fstr = ($d['fecha'] instanceof DateTime) ? $d['fecha']->format('Y-m-d') : (string)$d['fecha'];
@@ -357,28 +439,37 @@ endforeach; ?>
     $color = isset($day_colors[$day_es]) ? $day_colors[$day_es] : '#e2e8f0';
     $tix = intval($d['tickets']);
     $items = intval($d['items']);
+    $horas = floatval($d['horas']);
     $ventas = floatval($d['ventas']);
     $avg = $tix > 0 ? $ventas / $tix : 0;
+    $eff = $horas > 0 ? $ventas / $horas : 0;
+
     $tot_t += $tix;
     $tot_i += $items;
+    $tot_h += $horas;
     $tot_v += $ventas;
 ?>
         <tr data-fecha="<?php echo $fstr; ?>">
+          <td style="color:#e2e8f0;font-weight:600;"><?php echo htmlspecialchars($mesero); ?></td>
           <td><span class="badge-day" style="background:<?php echo $color; ?>22;color:<?php echo $color; ?>"><?php echo $day_es; ?></span></td>
           <td style="font-weight:600;color:#cbd5e1;"><?php echo date('M d, Y', strtotime($fstr)); ?></td>
           <td style="text-align:right;color:#60a5fa;font-weight:700;" data-val="<?php echo $tix; ?>"><?php echo number_format($tix); ?></td>
           <td style="text-align:right;color:#94a3b8;" data-val="<?php echo $items; ?>"><?php echo number_format($items); ?></td>
+          <td style="text-align:right;color:#a78bfa;" data-val="<?php printf('%.2f', $horas); ?>"><?php echo number_format($horas, 2); ?></td>
           <td style="text-align:right;color:#4ade80;font-weight:700;" data-val="<?php printf('%.2f', $ventas); ?>">$<?php echo number_format($ventas, 2); ?></td>
           <td style="text-align:right;color:#f472b6;" data-val="<?php printf('%.2f', $avg); ?>">$<?php echo number_format($avg, 2); ?></td>
+          <td style="text-align:right;color:#34d399;font-weight:600;" data-val="<?php printf('%.2f', $eff); ?>">$<?php echo number_format($eff, 2); ?></td>
         </tr>
         <?php
   endforeach; ?>
         <tr class="tr-total">
-          <td colspan="2" style="color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:.05em;">TOTALES</td>
+          <td colspan="3" style="color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:.05em;">TOTALES</td>
           <td style="text-align:right;color:#60a5fa;"><?php echo number_format($tot_t); ?></td>
           <td style="text-align:right;color:#94a3b8;"><?php echo number_format($tot_i); ?></td>
+          <td style="text-align:right;color:#a78bfa;"><?php echo number_format($tot_h, 2); ?></td>
           <td style="text-align:right;color:#4ade80;">$<?php echo number_format($tot_v, 2); ?></td>
           <td style="text-align:right;color:#f472b6;">$<?php echo $tot_t > 0 ? number_format($tot_v / $tot_t, 2) : '0.00'; ?></td>
+          <td style="text-align:right;color:#34d399;">$<?php echo $tot_h > 0 ? number_format($tot_v / $tot_h, 2) : '0.00'; ?></td>
         </tr>
       </tbody>
     </table>
@@ -395,14 +486,16 @@ endforeach; ?>
       <table id="tblPlatos">
         <thead>
           <tr>
-            <th onclick="sortTbl('tblPlatos',0)" data-type="text">PLATILLO</th>
-            <th onclick="sortTbl('tblPlatos',1)" data-type="num" style="text-align:right;">QTY</th>
-            <th onclick="sortTbl('tblPlatos',2)" data-type="num" style="text-align:right;color:#4ade80;">VENTAS</th>
+            <th onclick="sortTbl('tblPlatos',0)" data-type="text">MESERO</th>
+            <th onclick="sortTbl('tblPlatos',1)" data-type="text">PLATILLO</th>
+            <th onclick="sortTbl('tblPlatos',2)" data-type="num" style="text-align:right;">QTY</th>
+            <th onclick="sortTbl('tblPlatos',3)" data-type="num" style="text-align:right;color:#4ade80;">VENTAS</th>
           </tr>
         </thead>
         <tbody>
           <?php foreach ($top_platos as $p): ?>
           <tr>
+            <td style="color:#cbd5e1;"><?php echo htmlspecialchars($mesero); ?></td>
             <td style="color:#e2e8f0;"><?php echo htmlspecialchars($p['platillo']); ?></td>
             <td style="text-align:right;color:#94a3b8;" data-val="<?php echo $p['qty']; ?>"><?php echo number_format((int)$p['qty']); ?></td>
             <td style="text-align:right;color:#4ade80;" data-val="<?php printf('%.2f', $p['total']); ?>">$<?php echo number_format($p['total'], 2); ?></td>
@@ -410,7 +503,7 @@ endforeach; ?>
           <?php
   endforeach; ?>
           <?php if (empty($top_platos)): ?>
-          <tr><td colspan="3" style="text-align:center;color:#334155;padding:20px;">Sin datos</td></tr>
+          <tr><td colspan="4" style="text-align:center;color:#334155;padding:20px;">Sin datos</td></tr>
           <?php
   endif; ?>
         </tbody>
@@ -425,6 +518,7 @@ endforeach; ?>
       <table id="tblMedia">
         <thead>
           <tr>
+            <th data-type="text">MESERO</th>
             <th data-type="text">TIPO</th>
             <th data-type="num" style="text-align:right;">MONTO</th>
           </tr>
@@ -434,7 +528,8 @@ endforeach; ?>
     $mcolor = $mm['total_amount'] < 0 ? '#f87171' : '#e2e8f0';
 ?>
           <tr>
-            <td style="color:#cbd5e1;"><?php echo htmlspecialchars($mm['media_name']); ?></td>
+            <td style="color:#cbd5e1;"><?php echo htmlspecialchars($mesero); ?></td>
+            <td style="color:#e2e8f0;"><?php echo htmlspecialchars($mm['media_name']); ?></td>
             <td style="text-align:right;color:<?php echo $mcolor; ?>;font-weight:600;" data-val="<?php printf('%.2f', $mm['total_amount']); ?>">
               $<?php echo number_format($mm['total_amount'], 2); ?>
             </td>
@@ -442,7 +537,7 @@ endforeach; ?>
           <?php
   endforeach; ?>
           <?php if (empty($media_rows)): ?>
-          <tr><td colspan="2" style="text-align:center;color:#334155;padding:20px;">Sin datos financieros</td></tr>
+          <tr><td colspan="3" style="text-align:center;color:#334155;padding:20px;">Sin datos financieros</td></tr>
           <?php
   endif; ?>
         </tbody>
@@ -451,6 +546,48 @@ endforeach; ?>
   </div>
 
 </div><!-- /two-col -->
+
+<!-- Turnos / Reloj Checador -->
+<div class="glass" style="margin-top:14px;overflow:hidden;">
+  <div class="section-title">⏱️ Jornadas (Reloj Checador)</div>
+  <div style="max-height:280px;overflow-y:auto;">
+      <table id="tblPunches">
+        <thead>
+          <tr>
+            <th data-type="text">MESERO</th>
+            <th data-type="date">FECHA</th>
+            <th data-type="text">CARGO</th>
+            <th data-type="text" style="text-align:center;">ENTRADA</th>
+            <th data-type="text" style="text-align:center;">SALIDA</th>
+            <th data-type="text" style="text-align:right;">ESTADO</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($punches_rows as $punch):
+    $is_1899 = (strpos($punch['hora_salida'], '1899-') !== false || strpos($punch['hora_salida'], '1900-') !== false);
+    $p_in = $punch['hora_entrada'] ? date('h:i A', strtotime($punch['hora_entrada'])) : '-';
+    $p_out = (!empty($punch['hora_salida']) && !$is_1899) ? date('h:i A', strtotime($punch['hora_salida'])) : '-';
+    $p_fecha = $punch['fecha'] ? date('M d, Y', strtotime($punch['fecha'])) : '-';
+    $status_badge = ($punch['clock_status'] == 1 || empty($punch['hora_salida']) || $is_1899) ? '<span style="color:#4ade80;font-weight:700;">● Activo</span>' : '<span style="color:#94a3b8;">Cerrado</span>';
+?>
+          <tr>
+            <td style="color:#e2e8f0;font-weight:600;"><?php echo htmlspecialchars($mesero); ?></td>
+            <td style="font-weight:600;color:#cbd5e1;"><?php echo $p_fecha; ?></td>
+            <td style="color:#e2e8f0;"><?php echo htmlspecialchars($punch['cargo']); ?></td>
+            <td style="color:#60a5fa;text-align:center;font-weight:600;"><?php echo $p_in; ?></td>
+            <td style="color:#f472b6;text-align:center;font-weight:600;"><?php echo $p_out; ?></td>
+            <td style="text-align:right;"><?php echo $status_badge; ?></td>
+          </tr>
+          <?php
+  endforeach; ?>
+          <?php if (empty($punches_rows)): ?>
+          <tr><td colspan="6" style="text-align:center;color:#334155;padding:20px;">Sin registros en reloj checador</td></tr>
+          <?php
+  endif; ?>
+        </tbody>
+      </table>
+  </div>
+</div>
 
 <?php
 else: ?>

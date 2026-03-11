@@ -45,6 +45,7 @@ def get_base_dir():
 
 BASE = get_base_dir()
 LOG_FILE = os.path.join(BASE, "agente_sync.log")
+CONFIG_FILE = os.path.join(BASE, "config.json")
 
 # Config Log Rotativo
 logger = logging.getLogger("AgentSync")
@@ -181,14 +182,53 @@ class HeartbeatWorker(QThread):
                 """, (self.id_sync, self.cfg.get('restaurant_name','Unknown'), ip, public_ip, self.cfg.get('local_db_path',''), status_str, now, AGENT_VERSION))
                 conn.commit()
 
-                cur.execute("SELECT pending_command FROM sync_agents WHERE id_sync = %s", (self.id_sync,))
+                cur.execute("SELECT pending_command, config_json FROM sync_agents WHERE id_sync = %s", (self.id_sync,))
                 row = cur.fetchone()
-                if row and row[0]:
-                    cmd = row[0].strip().lower()
-                    logger.info(f"Command received: {cmd}")
-                    self.execute_command(cmd)
-                    cur.execute("UPDATE sync_agents SET pending_command = NULL WHERE id_sync = %s", (self.id_sync,))
+                if row:
+                    cmd_val, config_val = row[0], row[1]
+                    if cmd_val:
+                        cmd = cmd_val.strip().lower()
+                        logger.info(f"Command received: {cmd}")
+                        if cmd == "get_config":
+                            # Leer config local y subirlo a la DB para que el dashboard lo vea
+                            try:
+                                with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
+                                    raw_cfg = f.read()
+                                cur.execute("UPDATE sync_agents SET config_json = %s WHERE id_sync = %s", (raw_cfg, self.id_sync))
+                                conn.commit()
+                                logger.info("Config local subido a la DB (get_config).")
+                            except Exception as e:
+                                logger.error(f"Error reading local config_json: {e}")
+                        elif cmd == "set_config":
+                            # Escribir config.json SOLO cuando el dashboard lo manda explícitamente
+                            try:
+                                if config_val:
+                                    import json as _json
+                                    new_cfg = _json.loads(config_val)
+                                    with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
+                                        _json.dump(new_cfg, f, indent=4)
+                                    logger.info("Config local actualizado desde el dashboard (set_config).")
+                                    # Recargar config en memoria
+                                    self.cfg.update(new_cfg)
+                                    self.execute_command("sync_now")
+                                else:
+                                    logger.warning("set_config recibido pero config_json está vacío.")
+                            except Exception as e:
+                                logger.error(f"Error applying remote config_json: {e}")
+                        else:
+                            self.execute_command(cmd)
+                        cur.execute("UPDATE sync_agents SET pending_command = NULL WHERE id_sync = %s", (self.id_sync,))
+                        conn.commit()
+
+                # Siempre mantener el config_json en la DB actualizado con el local
+                # (para que el dashboard pueda verlo), pero NUNCA sobrescribir el local
+                try:
+                    with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
+                        raw_cfg = f.read()
+                    cur.execute("UPDATE sync_agents SET config_json = %s WHERE id_sync = %s", (raw_cfg, self.id_sync))
                     conn.commit()
+                except:
+                    pass
 
                 cur.close()
                 conn.close()
@@ -568,6 +608,95 @@ class SyncWorker(QThread):
                     "info"
                 )
 
+                # ── Sincronizar Reloj Checador (Histórico PunchInfo) ──
+                try:
+                    cbodata_path = os.path.join(os.path.dirname(cfg['local_db_path']), "CBOData_s.mdb")
+                    cbodef_path = os.path.join(os.path.dirname(cfg['local_db_path']), "CBODef_s.mdb")
+
+                    if os.path.exists(cbodata_path) and os.path.exists(cbodef_path):
+                        self._log("⏱ Leyendo reloj checador histórico (PunchInfo)…", "info")
+                        
+                        # Obtener mapa de nombres y puestos desde CBODef_s
+                        def_conn = pyodbc.connect(
+                            f"Driver={{Microsoft Access Driver (*.mdb, *.accdb)}};"
+                            f"DBQ={cbodef_path};PWD=C0mtrex;"
+                        )
+                        d_cur = def_conn.cursor()
+                        
+                        # 1. CashierDefinitions (SSNumber -> CashierName)
+                        d_cur.execute("SELECT SSNumber, CashierNumber, CashierName FROM CashierDefinitions")
+                        cashier_ssn_map = {}
+                        for r in d_cur.fetchall():
+                            ssn = str(r[0] or '').strip()
+                            cid = str(r[1] or 0)
+                            cname = str(r[2] or '').strip()
+                            if ssn:
+                                cashier_ssn_map[ssn] = {'cid': cid, 'name': cname}
+
+                        # 2. JobCodeInfo (JobCodeNumber -> JobDescription)
+                        d_cur.execute("SELECT JobCodeNumber, JobDescription FROM JobCodeInfo")
+                        job_map = {str(r[0]): str(r[1] or '') for r in d_cur.fetchall()}
+                        def_conn.close()
+
+                        # Filtrar últimos 60 días
+                        start_date = datetime.date.today() - datetime.timedelta(days=60)
+                        start_date_str = start_date.strftime('%Y-%m-%d')
+
+                        data_conn = pyodbc.connect(
+                            f"Driver={{Microsoft Access Driver (*.mdb, *.accdb)}};"
+                            f"DBQ={cbodata_path};PWD=C0mtrex;"
+                        )
+                        p_cur = data_conn.cursor()
+                        # Formato fecha Access: #YYYY-MM-DD#
+                        p_cur.execute(f"SELECT PunchID, SSNumber, ActJobCode, ActStartTime, ActStopTime, CurrentlyIn FROM PunchInfo WHERE ActStartTime >= #{start_date_str}#")
+                        punches = p_cur.fetchall()
+                        data_conn.close()
+
+                        if punches:
+                            batch_p = []
+                            for r in punches:
+                                punch_id = r[0] or 0
+                                ssn = str(r[1] or '').strip()
+                                job_code = str(r[2] or '')
+                                start_dt = r[3]
+                                stop_dt = r[4]
+                                currently_in = r[5]
+                                status = 0 if currently_in else 1
+                                
+                                job = job_map.get(job_code, f"Role {job_code}")
+                                emp_info = cashier_ssn_map.get(ssn, {})
+                                emp_id = emp_info.get('cid', 0)
+                                
+                                # Fase 8: Normalizing waiter name bridging Punch SSN -> CashierDefinitions Name short identical to Ventas
+                                mesero = emp_info.get('name', f"Emp {ssn}")
+                                
+                                if start_dt:
+                                    fecha_punch = start_dt.strftime('%Y-%m-%d')
+                                    real_stop_dt = None
+                                    if stop_dt and stop_dt.year > 1900:
+                                        real_stop_dt = stop_dt
+
+                                    batch_p.append((
+                                        rest, mesero, punch_id, emp_id, fecha_punch,
+                                        start_dt, real_stop_dt, job, status
+                                    ))
+                                
+                            if batch_p:
+                                push_cursor.executemany("""
+                                    INSERT INTO restaurantes_punches
+                                    (restaurante, mesero, punch_id, comtrex_empid, fecha, hora_entrada, hora_salida, cargo, clock_status)
+                                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                                    ON DUPLICATE KEY UPDATE
+                                        mesero=VALUES(mesero),
+                                        hora_salida=VALUES(hora_salida),
+                                        cargo=VALUES(cargo),
+                                        clock_status=VALUES(clock_status)
+                                """, batch_p)
+                                remote_conn.commit()
+                                self._log(f"  ✔ {len(batch_p)} registros de reloj checador histórico subidos.", "info")
+                except Exception as e:
+                    self._log(f"  ❌ Error sync reloj checador histórico: {e}", "warning")
+
                 # ── Enviar Histórico de Ejecución a MariaDB ────────────────
                 try:
                     c_cursor = remote_conn.cursor()
@@ -629,6 +758,7 @@ TABLAS = [
     'restaurantes_kpi_mesero',
     'restaurantes_mesero_media',
     'restaurantes_diario_media',
+    'restaurantes_punches',
 ]
 DAYS_ES = {'Monday':'Lunes','Tuesday':'Martes','Wednesday':'Miércoles',
             'Thursday':'Jueves','Friday':'Viernes','Saturday':'Sábado','Sunday':'Domingo'}
@@ -1019,9 +1149,15 @@ class MainWindow(QMainWindow):
         header = QFrame()
         header.setStyleSheet("background: #1e293b; border-radius: 12px;")
         header_layout = QHBoxLayout(header)
-        title = QLabel("🔄  Agente DB Sync")
+        try:
+            cfg = load_config()
+            res_name = cfg.get('restaurant_name', 'Config Missing')
+        except:
+            res_name = 'Unknown'
+            
+        title = QLabel(f"🔄  Agente DB Sync - {res_name}")
         title.setStyleSheet("font-size: 18px; font-weight: bold; color: #f1f5f9;")
-        subtitle = QLabel("POS POS → MariaDB Cloud")
+        subtitle = QLabel("Comtrex POS → MariaDB Cloud")
         subtitle.setStyleSheet("font-size: 11px; color: #64748b;")
         title_block = QVBoxLayout()
         title_block.addWidget(title)
