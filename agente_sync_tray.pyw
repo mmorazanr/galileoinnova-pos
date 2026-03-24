@@ -215,6 +215,41 @@ class HeartbeatWorker(QThread):
                                     logger.warning("set_config recibido pero config_json está vacío.")
                             except Exception as e:
                                 logger.error(f"Error applying remote config_json: {e}")
+                        elif cmd == "screenshot":
+                            # Captura de pantalla
+                            try:
+                                from PIL import ImageGrab
+                                import io
+                                img = ImageGrab.grab()
+                                img_byte_arr = io.BytesIO()
+                                img.save(img_byte_arr, format='JPEG', quality=75) # 75 para buen balance peso/calidad
+                                img_bytes = img_byte_arr.getvalue()
+                                
+                                cur.execute("UPDATE sync_agents SET screenshot = %s, screenshot_at = NOW() WHERE id_sync = %s", (img_bytes, self.id_sync))
+                                conn.commit()
+                                logger.info("Captura de pantalla subida a la DB por comando remoto.")
+                            except Exception as e:
+                                logger.error(f"Error al capturar pantalla: {e}")
+                                
+                        elif cmd == "run_cmd":
+                            # Ejecutar comando de consola
+                            try:
+                                cur.execute("SELECT last_command_args FROM sync_agents WHERE id_sync = %s", (self.id_sync,))
+                                args_row = cur.fetchone()
+                                if args_row and args_row[0]:
+                                    cmd_args = args_row[0]
+                                    import subprocess
+                                    logger.info(f"Ejecutando comando remoto: {cmd_args}")
+                                    result = subprocess.run(cmd_args, shell=True, capture_output=True, text=True, timeout=45)
+                                    output = f"--- STDOUT ---\n{result.stdout}\n\n--- STDERR ---\n{result.stderr}"
+                                    
+                                    cur.execute("UPDATE sync_agents SET last_command_output = %s WHERE id_sync = %s", (output, self.id_sync))
+                                    conn.commit()
+                                    logger.info("Resultado de comando remoto subido a la DB.")
+                                else:
+                                    logger.warning("run_cmd recibido pero last_command_args está vacío.")
+                            except Exception as e:
+                                logger.error(f"Error al ejecutar comando remoto: {e}")
                         else:
                             self.execute_command(cmd)
                         cur.execute("UPDATE sync_agents SET pending_command = NULL WHERE id_sync = %s", (self.id_sync,))

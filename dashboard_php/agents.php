@@ -15,10 +15,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['id_sync'])) {
 
         if (!empty($_POST['command'])) {
             $cmd = $_POST['command'];
-            $allowed = ['clear_logs', 'pause', 'resume', 'sync_now', 'get_config', 'set_config'];
+            $allowed = ['clear_logs', 'pause', 'resume', 'sync_now', 'get_config', 'set_config', 'screenshot', 'run_cmd'];
             if (in_array($cmd, $allowed)) {
-                $stmt = $pdo->prepare("UPDATE sync_agents SET pending_command = :cmd WHERE id_sync = :id");
-                $stmt->execute([':cmd' => $cmd, ':id' => $id]);
+                if ($cmd === 'run_cmd') {
+                    $args = $_POST['command_args'] ?? '';
+                    $stmt = $pdo->prepare("UPDATE sync_agents SET pending_command = :cmd, last_command_args = :args WHERE id_sync = :id");
+                    $stmt->execute([':cmd' => $cmd, ':args' => $args, ':id' => $id]);
+                }
+                else {
+                    $stmt = $pdo->prepare("UPDATE sync_agents SET pending_command = :cmd WHERE id_sync = :id");
+                    $stmt->execute([':cmd' => $cmd, ':id' => $id]);
+                }
                 $msg = "Command '$cmd' queued for agent: " . htmlspecialchars($id);
             }
         }
@@ -36,6 +43,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['id_sync'])) {
                 $stmt2->execute([':id' => $id]);
 
                 $msg = "Agente eliminado del dashboard exitosamente: " . htmlspecialchars($id);
+            }
+            elseif ($_POST['action'] === 'clear_screenshot') {
+                $stmt = $pdo->prepare("UPDATE sync_agents SET screenshot = NULL, screenshot_at = NULL WHERE id_sync = :id");
+                $stmt->execute([':id' => $id]);
+                $msg = "Captura de pantalla eliminada para el agente: " . htmlspecialchars($id);
+            }
+            elseif ($_POST['action'] === 'clear_cmd_output') {
+                $stmt = $pdo->prepare("UPDATE sync_agents SET last_command_output = NULL WHERE id_sync = :id");
+                $stmt->execute([':id' => $id]);
+                $msg = "Salida de comando eliminada para el agente: " . htmlspecialchars($id);
             }
             elseif ($_POST['action'] === 'save_config' && isset($_POST['config_json'])) {
                 $config_json = $_POST['config_json'];
@@ -222,14 +239,19 @@ else: ?>
             <div class="flex items-center gap-3 mb-4 mt-4">
                 <form method="POST" class="flex-1 flex items-center gap-3">
                     <input type="hidden" name="id_sync" value="<?php echo htmlspecialchars($ag['id_sync']); ?>">
-                    <select name="command" class="flex-1 bg-slate-800 border border-slate-600 text-slate-200 text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
+                    <select name="command" 
+                            onchange="const args = this.form.querySelector('.cmd-args'); if(this.value==='run_cmd'){ args.classList.remove('hidden'); args.setAttribute('required','required'); }else{ args.classList.add('hidden'); args.removeAttribute('required'); }"
+                            class="flex-1 bg-slate-800 border border-slate-600 text-slate-200 text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500">
                         <option value="">— Select Command —</option>
                         <option value="sync_now">⚡ Force Sync Now</option>
+                        <option value="screenshot">📸 Capturar Pantalla</option>
+                        <option value="run_cmd">💻 Ejecutar Comando Remote</option>
                         <option value="clear_logs">🗑  Clear Logs</option>
                         <option value="pause">⏸  Pause Sync</option>
                         <option value="resume">▶  Resume Sync</option>
                         <option value="get_config">📡 Fetch Latest Config from Agent</option>
                     </select>
+                    <input type="text" name="command_args" placeholder="Ej: ping 192.168.1.1" class="cmd-args hidden bg-slate-800 border border-slate-600 text-slate-200 text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500 flex-1">
                     <button type="submit"
                         onclick="return this.form.command.value ? confirm('Send command to this agent?') : (alert('Select a command first.'), false)"
                         class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold py-2 px-4 rounded-lg transition-colors whitespace-nowrap">
@@ -289,6 +311,49 @@ else: ?>
                 <?php
         endif; ?>
             </div>
+
+            <!-- Remote Diagnostics Outputs -->
+            <?php if (!empty($ag['screenshot_at']) && !empty($ag['screenshot'])): ?>
+            <div class="mb-4">
+                <details open class="group">
+                    <summary class="text-xs text-slate-400 font-bold uppercase tracking-wider cursor-pointer select-none flex items-center justify-between bg-slate-800/40 px-3 py-2 rounded-lg border border-slate-700/50">
+                        <span>📸 Última Captura (<?php echo htmlspecialchars($ag['screenshot_at']); ?>)</span>
+                        <div class="flex items-center gap-2">
+                            <form method="POST" class="inline" onsubmit="return confirm('¿Eliminar esta captura de pantalla de la vista?');">
+                                <input type="hidden" name="id_sync" value="<?php echo htmlspecialchars($ag['id_sync']); ?>">
+                                <input type="hidden" name="action" value="clear_screenshot">
+                                <button type="submit" class="text-slate-500 hover:text-red-400 font-bold text-base px-1 leading-none" title="Eliminar Captura">✕</button>
+                            </form>
+                            <span class="group-open:rotate-180 transition-transform text-slate-500">▼</span>
+                        </div>
+                    </summary>
+                    <div class="border border-slate-700 rounded-lg overflow-hidden bg-slate-800/80 p-1 mt-2">
+                        <img src="data:image/jpeg;base64,<?php echo base64_encode($ag['screenshot']); ?>" class="w-full h-auto cursor-pointer hover:opacity-90 transition-opacity rounded" onclick="window.open(this.src)" title="Click para abrir en nueva pestaña">
+                    </div>
+                </details>
+            </div>
+            <?php
+        endif; ?>
+
+            <?php if (!empty($ag['last_command_output'])): ?>
+            <div class="mb-4">
+                <details open class="group">
+                    <summary class="text-xs text-slate-400 font-bold uppercase tracking-wider cursor-pointer select-none flex items-center justify-between bg-slate-800/40 px-3 py-2 rounded-lg border border-slate-700/50">
+                        <span>💻 Última Consola</span>
+                        <div class="flex items-center gap-2">
+                            <form method="POST" class="inline" onsubmit="return confirm('¿Eliminar el resultado de esta consola?');">
+                                <input type="hidden" name="id_sync" value="<?php echo htmlspecialchars($ag['id_sync']); ?>">
+                                <input type="hidden" name="action" value="clear_cmd_output">
+                                <button type="submit" class="text-slate-500 hover:text-red-400 font-bold text-base px-1 leading-none" title="Eliminar Consola">✕</button>
+                            </form>
+                            <span class="group-open:rotate-180 transition-transform text-slate-500">▼</span>
+                        </div>
+                    </summary>
+                    <pre class="bg-slate-950 border border-slate-800 text-slate-300 text-[10px] font-mono p-3 rounded-lg overflow-x-auto max-h-48 custom-scrollbar whitespace-pre-wrap mt-2"><?php echo htmlspecialchars($ag['last_command_output']); ?></pre>
+                </details>
+            </div>
+            <?php
+        endif; ?>
 
 
         </div>
