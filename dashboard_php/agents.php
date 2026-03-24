@@ -319,7 +319,7 @@ else: ?>
                     <summary class="text-xs text-slate-400 font-bold uppercase tracking-wider cursor-pointer select-none flex items-center justify-between bg-slate-800/40 px-3 py-2 rounded-lg border border-slate-700/50">
                         <span>📸 Última Captura (<?php echo htmlspecialchars($ag['screenshot_at']); ?>)</span>
                         <div class="flex items-center gap-2">
-                            <form method="POST" class="inline" onsubmit="return confirm('¿Eliminar esta captura de pantalla de la vista?');">
+                            <form method="POST" class="inline">
                                 <input type="hidden" name="id_sync" value="<?php echo htmlspecialchars($ag['id_sync']); ?>">
                                 <input type="hidden" name="action" value="clear_screenshot">
                                 <button type="submit" class="text-slate-500 hover:text-red-400 font-bold text-base px-1 leading-none" title="Eliminar Captura">✕</button>
@@ -341,7 +341,7 @@ else: ?>
                     <summary class="text-xs text-slate-400 font-bold uppercase tracking-wider cursor-pointer select-none flex items-center justify-between bg-slate-800/40 px-3 py-2 rounded-lg border border-slate-700/50">
                         <span>💻 Última Consola</span>
                         <div class="flex items-center gap-2">
-                            <form method="POST" class="inline" onsubmit="return confirm('¿Eliminar el resultado de esta consola?');">
+                            <form method="POST" class="inline">
                                 <input type="hidden" name="id_sync" value="<?php echo htmlspecialchars($ag['id_sync']); ?>">
                                 <input type="hidden" name="action" value="clear_cmd_output">
                                 <button type="submit" class="text-slate-500 hover:text-red-400 font-bold text-base px-1 leading-none" title="Eliminar Consola">✕</button>
