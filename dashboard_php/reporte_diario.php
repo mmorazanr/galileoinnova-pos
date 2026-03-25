@@ -6,7 +6,7 @@ $start_date = isset($_GET['start_date']) ? $_GET['start_date'] : date('Y-m-01');
 $end_date = isset($_GET['end_date']) ? $_GET['end_date'] : date('Y-m-d');
 $restaurante_filter = isset($_GET['restaurante']) ? $_GET['restaurante'] : '';
 
-$where_clause = "WHERE fecha >= :start_date AND fecha <= :end_date";
+$where_clause = "WHERE d.fecha >= :start_date AND d.fecha <= :end_date";
 $params = ['start_date' => $start_date, 'end_date' => $end_date];
 
 $stmt_all = $pdo->prepare("SELECT DISTINCT restaurante FROM restaurantes_diario_media ORDER BY restaurante ASC");
@@ -27,7 +27,7 @@ if (!empty($restaurante_filter) && !can_access_restaurant($restaurante_filter)) 
 }
 
 if (!empty($restaurante_filter)) {
-    $where_clause .= " AND restaurante = :restaurante";
+    $where_clause .= " AND d.restaurante = :restaurante";
     $params['restaurante'] = $restaurante_filter;
 }
 elseif (!is_owner()) {
@@ -42,11 +42,30 @@ elseif (!is_owner()) {
             $in_keys[] = ":" . $key;
             $params[$key] = $r;
         }
-        $where_clause .= " AND restaurante IN (" . implode(',', $in_keys) . ")";
+        $where_clause .= " AND d.restaurante IN (" . implode(',', $in_keys) . ")";
     }
 }
 
-$sql = "SELECT * FROM restaurantes_diario_media " . $where_clause . " ORDER BY fecha DESC, restaurante ASC";
+$sql = "
+SELECT 
+    d.*,
+    k.total_tickets,
+    p.meseros_count,
+    p.total_horas
+FROM restaurantes_diario_media d
+LEFT JOIN restaurantes_kpi k ON d.restaurante = k.restaurante AND d.fecha = k.fecha
+LEFT JOIN (
+    SELECT 
+        fecha, 
+        restaurante, 
+        COUNT(DISTINCT mesero) as meseros_count, 
+        SUM(TIMESTAMPDIFF(MINUTE, hora_entrada, IFNULL(hora_salida, hora_entrada))) / 60.0 as total_horas 
+    FROM restaurantes_punches 
+    WHERE cargo = 'Server' OR cargo LIKE '%mesero%'
+    GROUP BY fecha, restaurante
+) p ON d.restaurante = p.restaurante AND d.fecha = p.fecha
+" . $where_clause . " ORDER BY d.fecha DESC, d.restaurante ASC";
+
 $stmt_report = $pdo->prepare($sql);
 $stmt_report->execute($params);
 $report_rows = $stmt_report->fetchAll();
@@ -173,11 +192,15 @@ endforeach; ?>
                     <th class="p-3 border-b border-slate-700 text-right" onclick="sortTable(13)" data-type="num">Service Bal</th>
                     <th class="p-3 border-b border-slate-700 text-right" onclick="sortTable(14)" data-type="num">Tax 1</th>
                     <th class="p-3 border-b border-slate-700 text-right" onclick="sortTable(15)" data-type="num">Tips Paid</th>
+                    <th class="p-3 border-b border-slate-700 text-right" onclick="sortTable(16)" data-type="num">Tickets</th>
+                    <th class="p-3 border-b border-slate-700 text-right" onclick="sortTable(17)" data-type="num">Waiters</th>
+                    <th class="p-3 border-b border-slate-700 text-right" onclick="sortTable(18)" data-type="num">Total Hrs</th>
+                    <th class="p-3 border-b border-slate-700 text-right" onclick="sortTable(19)" data-type="num">Avg Hrs</th>
                 </tr>
             </thead>
             <tbody id="reportBody" class="divide-y divide-slate-800">
                 <?php if (empty($report_rows)): ?>
-                    <tr><td colspan="16" class="p-8 text-center text-slate-500">No data found for this period.</td></tr>
+                    <tr><td colspan="20" class="p-8 text-center text-slate-500">No data found for this period.</td></tr>
                 <?php
 else: ?>
                     <?php foreach ($report_rows as $row):
@@ -203,6 +226,11 @@ else: ?>
                         <td class="p-3 text-right text-purple-300" data-val="<?php echo $row['service_balance']; ?>">$<?php echo number_format($row['service_balance'], 2); ?></td>
                         <td class="p-3 text-right text-teal-300" data-val="<?php echo $row['tax_1']; ?>">$<?php echo number_format($row['tax_1'], 2); ?></td>
                         <td class="p-3 text-right text-pink-400" data-val="<?php echo $row['tips_paid']; ?>">$<?php echo number_format($row['tips_paid'], 2); ?></td>
+                        <td class="p-3 text-right text-slate-300" data-val="<?php echo intval($row['total_tickets']); ?>"><?php echo intval($row['total_tickets']); ?></td>
+                        <td class="p-3 text-right text-slate-300" data-val="<?php echo intval($row['meseros_count']); ?>"><?php echo intval($row['meseros_count']); ?></td>
+                        <td class="p-3 text-right text-slate-300" data-val="<?php echo floatval($row['total_horas']); ?>"><?php echo number_format(floatval($row['total_horas']), 2); ?></td>
+                        <?php $avg_hrs = ($row['meseros_count'] > 0) ? (floatval($row['total_horas']) / intval($row['meseros_count'])) : 0; ?>
+                        <td class="p-3 text-right text-slate-300" data-val="<?php echo $avg_hrs; ?>"><?php echo number_format($avg_hrs, 2); ?></td>
                     </tr>
                     <?php
     endforeach; ?>
@@ -285,7 +313,8 @@ function exportToExcel() {
     // Column widths
     ws['!cols'] = [
         {wch:12},{wch:13},{wch:28},{wch:12},{wch:12},{wch:12},{wch:10},
-        {wch:12},{wch:10},{wch:10},{wch:10},{wch:10},{wch:10},{wch:12},{wch:8},{wch:10}
+        {wch:12},{wch:10},{wch:10},{wch:10},{wch:10},{wch:10},{wch:12},{wch:8},{wch:10},
+        {wch:10},{wch:10},{wch:10},{wch:10}
     ];
 
     const wb = XLSX.utils.book_new();
