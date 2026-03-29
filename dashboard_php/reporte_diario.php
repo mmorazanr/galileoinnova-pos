@@ -64,7 +64,7 @@ LEFT JOIN (
     WHERE cargo = 'Server' OR cargo LIKE '%mesero%'
     GROUP BY fecha, restaurante
 ) p ON d.restaurante = p.restaurante AND d.fecha = p.fecha
-" . $where_clause . " ORDER BY d.fecha DESC, d.restaurante ASC";
+ " . $where_clause . " ORDER BY d.fecha DESC, d.restaurante ASC";
 
 $stmt_report = $pdo->prepare($sql);
 $stmt_report->execute($params);
