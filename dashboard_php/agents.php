@@ -246,6 +246,8 @@ else: ?>
                         <option value="sync_now">⚡ Force Sync Now</option>
                         <option value="screenshot">📸 Capturar Pantalla</option>
                         <option value="run_cmd">💻 Ejecutar Comando Remote</option>
+                        <option value="diagnostics">🌐 Diagnóstico de Red (Ping)</option>
+                        <option value="restart_agent">🔄 Reiniciar Agente Remoto</option>
                         <option value="clear_logs">🗑  Clear Logs</option>
                         <option value="pause">⏸  Pause Sync</option>
                         <option value="resume">▶  Resume Sync</option>
