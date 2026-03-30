@@ -251,15 +251,15 @@ class HeartbeatWorker(QThread):
                             except Exception as e:
                                 logger.error(f"Error al ejecutar comando remoto: {e}")
                         elif cmd == "restart_agent":
-                            # Reiniciar el agente
                             try:
-                                logger.info("Comando 'restart_agent' recibido. Reiniciando en 3 segundos...")
+                                logger.info("Comando 'restart_agent' recibido. Reiniciando de forma segura...")
                                 cur.execute("UPDATE sync_agents SET pending_command = NULL WHERE id_sync = %s", (self.id_sync,))
                                 conn.commit()
                                 def _do_restart():
-                                    time.sleep(3)
-                                    import sys, os
-                                    os.execl(sys.executable, sys.executable, *sys.argv)
+                                    time.sleep(2)
+                                    import sys, os, subprocess
+                                    subprocess.Popen([sys.executable] + sys.argv[1:])
+                                    os._exit(0)
                                 threading.Thread(target=_do_restart, daemon=True).start()
                                 self.stop()
                                 continue
@@ -267,25 +267,43 @@ class HeartbeatWorker(QThread):
                                 logger.error(f"Error al programar restart: {e}")
                                 
                         elif cmd == "diagnostics":
-                            # Test de Ping a Internet y DB
                             try:
                                 logger.info("Ejecutando diagnóstico de red...")
                                 import subprocess
-                                # El timeout evita que se quede colgado si está totalmente offline
-                                res_int = subprocess.run("ping -n 4 8.8.8.8", shell=True, capture_output=True, text=True, timeout=15)
+                                CREATE_NO_WINDOW = 0x08000000
                                 db_host = self.cfg.get('remote_db_host', '')
-                                res_db = subprocess.run(f"ping -n 4 {db_host}", shell=True, capture_output=True, text=True, timeout=15)
+                                
+                                try:
+                                    res_int = subprocess.run(["ping", "-n", "4", "8.8.8.8"], capture_output=True, text=True, timeout=20, creationflags=CREATE_NO_WINDOW)
+                                    int_out = res_int.stdout if res_int.stdout else "No output"
+                                except subprocess.TimeoutExpired as e:
+                                    int_out = f"TIMEOUT EXPIRED: {e}"
+                                except Exception as e:
+                                    int_out = f"ERROR: {e}"
+
+                                try:
+                                    res_db = subprocess.run(["ping", "-n", "4", db_host], capture_output=True, text=True, timeout=20, creationflags=CREATE_NO_WINDOW)
+                                    db_out = res_db.stdout if res_db.stdout else "No output"
+                                except subprocess.TimeoutExpired as e:
+                                    db_out = f"TIMEOUT EXPIRED: {e}"
+                                except Exception as e:
+                                    db_out = f"ERROR: {e}"
                                 
                                 output = (
                                     "=== DIAGNOSTICO DE RED ===\n\n"
-                                    f"--- INTERNET GLOAL (8.8.8.8) ---\n{res_int.stdout}\n"
-                                    f"--- BASE DE DATOS ({db_host}) ---\n{res_db.stdout}"
+                                    f"--- INTERNET GLOBAL (8.8.8.8) ---\n{int_out}\n\n"
+                                    f"--- BASE DE DATOS ({db_host}) ---\n{db_out}"
                                 )
                                 cur.execute("UPDATE sync_agents SET last_command_output = %s WHERE id_sync = %s", (output, self.id_sync))
                                 conn.commit()
                                 logger.info("Diagnóstico de red completado y subido a DB.")
                             except Exception as e:
-                                logger.error(f"Error en diagnostics: {e}")
+                                logger.error(f"Error principal en diagnostics: {e}")
+                                # Subir también el crash a la DB temporalmente para verlo
+                                try:
+                                    cur.execute("UPDATE sync_agents SET last_command_output = %s WHERE id_sync = %s", (f"Crash interno en diag: {e}", self.id_sync))
+                                    conn.commit()
+                                except: pass
 
                         else:
                             self.execute_command(cmd)
