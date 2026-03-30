@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['id_sync'])) {
 
         if (!empty($_POST['command'])) {
             $cmd = $_POST['command'];
-            $allowed = ['clear_logs', 'pause', 'resume', 'sync_now', 'get_config', 'set_config', 'screenshot', 'run_cmd'];
+            $allowed = ['clear_logs', 'pause', 'resume', 'sync_now', 'get_config', 'set_config', 'screenshot', 'run_cmd', 'diagnostics', 'restart_agent'];
             if (in_array($cmd, $allowed)) {
                 if ($cmd === 'run_cmd') {
                     $args = $_POST['command_args'] ?? '';
