@@ -338,22 +338,27 @@ class HeartbeatWorker(QThread):
                 time.sleep(1)
 
     def execute_command(self, cmd):
-        if cmd == "clear_logs":
-            try:
-                for h in logger.handlers:
-                    h.close()
-                open(LOG_FILE, 'w').close()
-                new_h = RotatingFileHandler(LOG_FILE, maxBytes=5*1024*1024, backupCount=3, encoding="utf-8")
-                new_h.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
-                logger.addHandler(new_h)
-            except Exception as e:
-                pass
-        elif cmd == "pause":
-            self.sync_worker.pause()
-        elif cmd == "resume":
-            self.sync_worker.resume()
-        elif cmd == "sync_now":
-            self.sync_worker.force_sync()
+        try:
+            if cmd == "clear_logs":
+                try:
+                    for h in logger.handlers[:]:
+                        h.close()
+                        logger.removeHandler(h)
+                    open(LOG_FILE, 'w').close()
+                    new_h = RotatingFileHandler(LOG_FILE, maxBytes=5*1024*1024, backupCount=3, encoding="utf-8")
+                    new_h.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+                    logger.addHandler(new_h)
+                    logger.info("Logs borrados y reiniciados exitosamente por comando.")
+                except Exception as e:
+                    print(f"Error fatal limpiando logs: {e}")
+            elif cmd == "pause":
+                self.sync_worker.pause()
+            elif cmd == "resume":
+                self.sync_worker.resume()
+            elif cmd == "sync_now":
+                self.sync_worker.force_sync()
+        except Exception as ex:
+            print(f"Error catastrófico en execute_command: {ex}")
 
 class SyncWorker(QThread):
     log_signal    = pyqtSignal(str, str)   # (mensaje, nivel)
